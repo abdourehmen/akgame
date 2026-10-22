@@ -8,3 +8,12 @@ createRoot(document.getElementById('root')).render(
     <App />
   </StrictMode>,
 )
+// إلغاء الاستعادة التلقائية لمكان التمرير من المتصفح
+if ('scrollRestoration' in history) {
+  history.scrollRestoration = 'manual';
+}
+
+// جعل الصفحة تبدأ من الأعلى دائماً عند إعادة التحميل
+window.addEventListener('beforeunload', () => {
+  window.scrollTo(0, 0);
+});

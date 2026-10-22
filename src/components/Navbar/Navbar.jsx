@@ -39,12 +39,12 @@ export default function Navbar({ currentLang, setLang }) {
           <span className="logo-text">AKGAME</span>
         </div>
 
-        {/* روابط التنقل الرئيسية */}
+        {/* روابط التنقل الرئيسية المحدثة */}
         <nav className={`navbar-links ${menuOpen ? 'active' : ''}`}>
-          <a href="#consoles" className="nav-link" onClick={() => setMenuOpen(false)}>{t.consoles}</a>
-          <a href="#devices" className="nav-link" onClick={() => setMenuOpen(false)}>{t.devices}</a>
-          <a href="#subscriptions" className="nav-link" onClick={() => setMenuOpen(false)}>{t.subscriptions}</a>
-          <a href="#accessories" className="nav-link" onClick={() => setMenuOpen(false)}>{t.accessories}</a>
+          <a href="#new" className="nav-link" onClick={() => setMenuOpen(false)}>{t.newProducts}</a>
+          <a href="#bestsellers" className="nav-link" onClick={() => setMenuOpen(false)}>{t.bestSellers}</a>
+          <a href="#discounts" className="nav-link" onClick={() => setMenuOpen(false)}>{t.discounts}</a>
+          <a href="#digital" className="nav-link" onClick={() => setMenuOpen(false)}>{t.digitalProducts}</a>
         </nav>
 
         {/* أدوات التحكم والجراءات */}

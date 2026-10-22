@@ -1,0 +1,48 @@
+/* حاوية الشريط المتحرك */
+.marquee-container {
+  background: linear-gradient(90deg, #1e1b4b, #312e81, #1e1b4b);
+  color: #ffffff;
+  padding: 12px 0;
+  overflow: hidden;
+  width: 100%;
+  position: relative;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* مسار الحركة */
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: scrollMarquee 25s linear infinite;
+}
+
+/* إيقاف الحركة عند المرور بالماوس */
+.marquee-container:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+/* شكل العنصر الفردي داخل الشريط */
+.marquee-item {
+  display: flex;
+  align-items: center;
+  padding: 6px 20px;
+  margin: 0 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50px;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* حركة الانزلاق المستمرة */
+@keyframes scrollMarquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(-100% / 3));
+  }
+}

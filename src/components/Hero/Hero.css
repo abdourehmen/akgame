@@ -156,7 +156,31 @@
   filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.8));
   margin-left: 0; /* توسيط المجسم تماماً فوق الصورة */
 }
+/* ================= أنميشن الطفو المستمر للمجسم والصورة ================= */
+@keyframes floatCard {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
 
+.hero-3d-card {
+  animation: floatCard 6s ease-in-out infinite;
+}
+
+/* ================= تحسين تفاعل الزر (Hover Animation) ================= */
+.white-long-btn {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.white-long-btn:hover {
+  transform: translateY(-4px) scale(1.02) !important;
+  box-shadow: 0 12px 35px rgba(255, 255, 255, 0.4) !important;
+}
 /* ================= التجاوب مع الشاشات المتوسطة والصغيرة (Responsive) ================= */
 @media (max-width: 968px) {
   .hero-section {
