@@ -1,0 +1,216 @@
+/* ================= إعدادات قسم الـ Hero العامة ================= */
+.hero-section {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 140px 0 60px 0;
+  box-sizing: border-box;
+  
+  /* تعيين صورة الـ hero.jpg كخلفية للقسم بالكامل */
+  background-image: url('/hero.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  
+  overflow: hidden;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 10, 12, 0.85);
+  z-index: 1;
+}
+
+.hero-container {
+  width: 100%;
+  padding: 0 40px;
+  max-width: 1600px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  /* توزيع النصوص والصورة في جهتين متقابلتين وثابتتين بغض النظر عن اللغة */
+  justify-content: space-between; 
+  direction: ltr; /* تثبيت اتجاه القسم ليكون من اليسار ليمين الثابت */
+  gap: 50px;
+  position: relative;
+  z-index: 2;
+  box-sizing: border-box;
+}
+
+/* ================= صندوق النصوص والمسافات البينية ================= */
+.hero-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 28px; /* ترك فراغ ومسافة مريحة ومنظمة بين العنوان، الوصف، والزر */
+  text-align: left;
+  align-items: flex-start;
+  direction: ltr;
+}
+
+.hero-title {
+  font-size: 48px;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.2;
+  margin: 0 0 10px 0;
+}
+
+.hero-description {
+  font-size: 16px;
+  color: #94a3b8;
+  line-height: 1.6;
+  margin: 0 0 15px 0;
+}
+
+/* ================= تنسيق زر تصفح الألعاب (الأبيض والطويل) ================= */
+.hero-buttons {
+  display: flex;
+  width: 100%;
+  margin-top: 5px;
+}
+
+.white-long-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 360px; /* جعل الزر طويلاً ومريحاً بصرياً */
+  padding: 16px 32px;
+  border-radius: 35px;
+  font-size: 16px;
+  font-weight: 700;
+  text-decoration: none;
+  background: #ffffff !important; /* لون أبيض ناصع وثابت */
+  color: #000000 !important; /* لون الخط أسود ليتناسق مع الخلفية البيضاء */
+  box-shadow: 0 4px 25px rgba(255, 255, 255, 0.25);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.white-long-btn:hover {
+  background: #f1f5f9 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 30px rgba(255, 255, 255, 0.4);
+}
+
+/* ================= قسم الصورة والمجسم الثلاثي الأبعاد ================= */
+.hero-image-wrapper {
+  flex: 1;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-glow {
+  position: absolute;
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, rgba(239, 68, 68, 0.08) 50%, transparent 80%);
+  filter: blur(90px);
+  z-index: 1;
+  border-radius: 50%;
+}
+
+.hero-3d-card {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 450px;
+}
+
+.hero-game-img {
+  width: 100%;
+  height: 600px;
+  border-radius: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.9);
+  object-fit: cover;
+  display: block;
+  margin-left: 0; /* توسيط العنصر تماماً */
+}
+
+.hero-model-viewer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  background-color: transparent;
+  --poster-color: transparent;
+  filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.8));
+  margin-left: 0; /* توسيط المجسم تماماً فوق الصورة */
+}
+
+/* ================= التجاوب مع الشاشات المتوسطة والصغيرة (Responsive) ================= */
+@media (max-width: 968px) {
+  .hero-section {
+    padding: 120px 0 40px 0;
+    min-height: auto;
+  }
+
+  .hero-container {
+    padding: 0 20px;
+    flex-direction: column; /* جعل النص في الأعلى والمجسم والصورة في الأسفل للهواتف */
+    text-align: center;
+    align-items: center;
+  }
+
+  .hero-content {
+    align-items: center;
+    text-align: center;
+    direction: ltr;
+  }
+
+  .hero-title {
+    font-size: 32px;
+  }
+
+  .hero-buttons {
+    justify-content: center;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .hero-game-img {
+    width: 100%;
+    height: 430px;
+    border-radius: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.9);
+    object-fit: cover;
+    display: block;
+    margin-left: 0;
+  }
+
+  .white-long-btn {
+    max-width: 100%; /* ليأخذ عرض الشاشة بالكامل في الجوال */
+  }
+
+  .hero-model-viewer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+    background-color: transparent;
+    --poster-color: transparent;
+    filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.8));
+    margin-left: 0;
+  }
+}
