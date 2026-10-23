@@ -1,11 +1,27 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { translations } from '../../locales/translations';
+import { supabase } from '../../supabaseClient';
 import './MainContent.css';
 
 export default function MainContent({ currentLang, onAddToCart }) {
+  const isRtl = currentLang === 'ar';
   const t = translations[currentLang]?.home || translations['ar'].home;
   const navigate = useNavigate();
+
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // حالة كلمة البحث
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // قاموس ترجمات عنوان قسم المجسمات
+  const figuresTitles = {
+    ar: 'المجسمات',
+    en: 'Figures',
+    fr: 'Figurines',
+    es: 'Figuras'
+  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -25,61 +41,158 @@ export default function MainContent({ currentLang, onAddToCart }) {
     return () => {
       sections.forEach((section) => observer.unobserve(section));
     };
+  }, [loading, searchQuery]);
+
+  useEffect(() => {
+    async function fetchHomeProducts() {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          console.error('Error fetching home products from Supabase:', error.message);
+        } else {
+          setProducts(data || []);
+        }
+      } catch (err) {
+        console.error('Unexpected error:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchHomeProducts();
   }, []);
 
-  // مصفوفة الفئات العلوية مع الأسماء والصور
+  // معالجة البحث عند الضغط على Enter
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate('/products', { state: { searchQuery: searchQuery.trim() } });
+    }
+  };
+
+  // الفلترة الفورية للمنتجات أثناء الكتابة
+  const filteredProducts = searchQuery.trim()
+    ? products.filter(p => p.title?.toLowerCase().includes(searchQuery.toLowerCase()))
+    : products;
+
   const categories = [
-    { 
-      id: 1, 
-      image: "/6photo(1).png", 
-      name: { ar: "أجهوة", en: "PS5 Games", fr: "Jeux PS5", es: "Juegos PS5" } 
-    },
-    { 
-      id: 2, 
-      image: "/6photo(2).png", 
-      name: { ar: "مجسمات", en: "Consoles", fr: "Consoles", es: "Consolas" } 
-    },
-    { 
-      id: 3, 
-      image: "/6photo(3).png", 
-      name: { ar: "اكسسوارات", en: "Xbox Games", fr: "Jeux Xbox", es: "Juegos Xbox" } 
-    },
-    { 
-      id: 4, 
-      image: "/6photo(4).png", 
-      name: { ar: "اجهزة مستعملة", en: "Digital Cards", fr: "Cartes Cadeaux", es: "Tarjetas Digitales" } 
-    },
-    { 
-      id: 5, 
-      image: "/6photo(5).png", 
-      name: { ar: "العاب الفديو", en: "Switch Games", fr: "Jeux Switch", es: "Juegos Switch" } 
-    },
-    { 
-      id: 6, 
-      image: "/6photo(6).png", 
-      name: { ar: "إشتراكات رقمية", en: "Accessories", fr: "Accessoires", es: "Accesorios" } 
-    },
+    { id: 1, image: "/6photo(1).png", key: "أجهزة الألعاب", name: { ar: "أجهزة الألعاب", en: "Consoles", fr: "Consoles", es: "Consolas" } },
+    { id: 2, image: "/6photo(2).png", key: "مجسمات", name: { ar: "مجسمات", en: "Figures", fr: "Figurines", es: "Figuras" } },
+    { id: 3, image: "/6photo(3).png", key: "إكسسوارات", name: { ar: "إكسسوارات", en: "Accessories", fr: "Accessoires", es: "Accesorios" } },
+    { id: 4, image: "/6photo(4).png", key: "اجهزة مستعملة", name: { ar: "اجهزة مستعملة", en: "Used Consoles", fr: "Consoles d'occasion", es: "Consolas usadas" } },
+    { id: 5, image: "/6photo(5).png", key: "ألعاب", name: { ar: "ألعاب", en: "Games", fr: "Jeux", es: "Juegos" } },
+    { id: 6, image: "/6photo(6).png", key: "بطاقات رقمية", name: { ar: "بطاقات رقمية", en: "Digital Cards", fr: "Cartes Cadeaux", es: "Tarjetas Digitales" } },
   ];
-  
-  const products = [
-    { id: 1, title: "HALLOWEEN: THE GAME | PS5", price: 3500, badge: "جديد", status: "متوفر" },
-    { id: 2, title: "CYBERPUNK 2077 | PS5", price: 4200, badge: "جديد", status: "متوفر" },
-    { id: 3, title: "SPIDER-MAN 2 | PS5", price: 5500, badge: "تخفيض", status: "متوفر" },
-    { id: 4, title: "EA SPORTS FC 25 | PS5", price: 6000, badge: "الأكثر مبيعا", status: "متوفر" },
-    { id: 5, title: "GOD OF WAR RAGNAROK | PS5", price: 5800, badge: "مميز", status: "متوفر" },
-  ];
+
+  // تصفية المنتجات لكل قسم بناءً على نتائج الفلترة الحالية
+  const newProducts = filteredProducts.filter(p => p.badge === 'جديد' || p.badge === 'New').slice(0, 5);
+  const bestSellers = filteredProducts.filter(p => p.badge === 'الأكثر مبيعا' || p.badge === 'Best Seller').slice(0, 5);
+  const discountProducts = filteredProducts.filter(p => p.badge === 'تخفيض' || p.badge === 'Sale' || p.badge === 'Promo').slice(0, 5);
+  const digitalProducts = filteredProducts.filter(p => p.category === 'digital' || p.badge === 'رقمي' || p.category === 'بطاقات رقمية').slice(0, 5);
+  const figuresProducts = filteredProducts.filter(p => p.category === 'مجسمات' || p.category === 'figures' || p.badge === 'مجسمات').slice(0, 5);
+
+  const renderProductCard = (prod, index, isDirectVisible = false) => (
+    <div 
+      key={prod.id} 
+      className="product-card" 
+      style={{ 
+        '--card-index': index,
+        ...(isDirectVisible ? { opacity: 1, transform: 'none', visibility: 'visible' } : {})
+      }}
+    >
+      {prod.badge && <span className="product-badge">{prod.badge}</span>}
+      <div className="product-image-container">
+        {prod.image_url ? (
+          <img src={prod.image_url} alt={prod.title} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px' }} />
+        ) : (
+          <span>photo</span>
+        )}
+      </div>
+      <div className="product-info">
+        <h3 className="product-title" title={prod.title}>{prod.title}</h3>
+        <div className="product-price-stock">
+          <span className="product-status">
+            <span className="status-dot"></span> 
+            {prod.in_stock !== false ? (isRtl ? 'متوفر' : 'In Stock') : (isRtl ? 'غير متوفر' : 'Out of Stock')}
+          </span>
+          <span className="product-price">{prod.price} DZD</span>
+        </div>
+        <button 
+          className="add-to-cart-btn" 
+          onClick={() => onAddToCart && onAddToCart(prod)}
+        >
+          {t.addToCart}
+        </button>
+      </div>
+    </div>
+  );
 
   return (
     <main className="store-main-container">
-      <div className="search-section fade-in-section">
-        <input 
-          type="text" 
-          placeholder={t.searchPlaceholder} 
-          className="store-search-input"
-        />
+      {/* 1. قسم البحث (موسّط في منتصف الشاشة) */}
+      <div 
+        className="search-section fade-in-section" 
+        style={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          width: '100%', 
+          margin: '20px 0' 
+        }}
+      >
+        <form 
+          onSubmit={handleSearchSubmit} 
+          style={{ 
+            width: '100%', 
+            maxWidth: '650px', 
+            margin: '0 auto', 
+            display: 'flex', 
+            justifyContent: 'center' 
+          }}
+        >
+          <input 
+            type="text" 
+            placeholder={t.searchPlaceholder} 
+            className="store-search-input"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{ width: '100%' }}
+          />
+        </form>
       </div>
 
-      {/* 2. تصفح حسب الفئة (مع إضافة عنوان الفئة تحت كل دائرة) */}
+      {/* عرض نتائج البحث الفورية فوراً وتلقائياً دون إخفاء الكروت */}
+      {searchQuery.trim() && (
+        <section className="products-section fade-in-section is-visible" style={{ marginBottom: '30px', opacity: 1, visibility: 'visible' }}>
+          <div className="section-header">
+            <h2 className="section-title">
+              {isRtl ? 'نتائج البحث' : 'Search Results'} ({filteredProducts.length})
+            </h2>
+            <button 
+              className="view-all-btn" 
+              onClick={() => navigate('/products', { state: { searchQuery: searchQuery.trim() } })}
+            >
+              {t.viewAll}
+            </button>
+          </div>
+          <div className="products-grid">
+            {filteredProducts.length === 0 ? (
+              <p style={{ gridColumn: '1 / -1', textAlign: 'center', color: '#94a3b8' }}>
+                {isRtl ? 'لا توجد منتجات مطابقة لـ' : 'No products found matching'} "{searchQuery}"
+              </p>
+            ) : (
+              filteredProducts.slice(0, 10).map((prod, idx) => renderProductCard(prod, idx, true))
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* 2. تصفح حسب الفئة */}
       <section className="categories-section fade-in-section">
         <h2 className="section-title">{t.categoriesTitle}</h2>
         <div className="categories-grid">
@@ -87,7 +200,7 @@ export default function MainContent({ currentLang, onAddToCart }) {
             <div 
               key={cat.id} 
               className="category-item"
-              onClick={() => navigate('/products')}
+              onClick={() => navigate('/products', { state: { category: cat.key } })}
             >
               <div 
                 className="category-circle" 
@@ -107,28 +220,19 @@ export default function MainContent({ currentLang, onAddToCart }) {
       <section id="new" className="products-section fade-in-section" style={{ scrollMarginTop: '100px' }}>
         <div className="section-header">
           <h2 className="section-title">{t.newProducts}</h2>
-          <button className="view-all-btn" onClick={() => navigate('/products')}>{t.viewAll}</button>
+          <button 
+            className="view-all-btn" 
+            onClick={() => navigate('/products', { state: { newlyArrived: true } })}
+          >
+            {t.viewAll}
+          </button>
         </div>
         <div className="products-grid">
-          {products.map((prod, index) => (
-            <div key={prod.id} className="product-card" style={{ '--card-index': index }}>
-              <span className="product-badge">{prod.badge}</span>
-              <div className="product-image-container"><span>photo</span></div>
-              <div className="product-info">
-                <h3 className="product-title" title={prod.title}>{prod.title}</h3>
-                <div className="product-price-stock">
-                  <span className="product-status"><span className="status-dot"></span> {prod.status}</span>
-                  <span className="product-price">{prod.price} دج</span>
-                </div>
-                <button 
-                  className="add-to-cart-btn" 
-                  onClick={() => onAddToCart && onAddToCart(prod)}
-                >
-                  {t.addToCart}
-                </button>
-              </div>
-            </div>
-          ))}
+          {loading ? (
+            <p style={{ gridColumn: '1 / -1', textAlign: 'center', color: '#94a3b8' }}>{isRtl ? 'جاري التحميل...' : 'Loading...'}</p>
+          ) : (
+            (newProducts.length > 0 ? newProducts : products.slice(0, 5)).map((prod, idx) => renderProductCard(prod, idx))
+          )}
         </div>
       </section>
 
@@ -136,57 +240,39 @@ export default function MainContent({ currentLang, onAddToCart }) {
       <section id="bestsellers" className="products-section fade-in-section" style={{ scrollMarginTop: '100px' }}>
         <div className="section-header">
           <h2 className="section-title">{t.bestSellers}</h2>
-          <button className="view-all-btn" onClick={() => navigate('/products')}>{t.viewAll}</button>
+          <button 
+            className="view-all-btn" 
+            onClick={() => navigate('/products', { state: { bestSellersOnly: true } })}
+          >
+            {t.viewAll}
+          </button>
         </div>
         <div className="products-grid">
-          {products.map((prod, index) => (
-            <div key={prod.id} className="product-card" style={{ '--card-index': index }}>
-              <span className="product-badge">{prod.badge}</span>
-              <div className="product-image-container"><span>photo</span></div>
-              <div className="product-info">
-                <h3 className="product-title">{prod.title}</h3>
-                <div className="product-price-stock">
-                  <span className="product-status"><span className="status-dot"></span> {prod.status}</span>
-                  <span className="product-price">{prod.price} دج</span>
-                </div>
-                <button 
-                  className="add-to-cart-btn" 
-                  onClick={() => onAddToCart && onAddToCart(prod)}
-                >
-                  {t.addToCart}
-                </button>
-              </div>
-            </div>
-          ))}
+          {loading ? (
+            <p style={{ gridColumn: '1 / -1', textAlign: 'center', color: '#94a3b8' }}>{isRtl ? 'جاري التحميل...' : 'Loading...'}</p>
+          ) : (
+            (bestSellers.length > 0 ? bestSellers : products.slice(0, 5)).map((prod, idx) => renderProductCard(prod, idx))
+          )}
         </div>
       </section>
 
-      {/* 5. قسم التخفيضات */}
+      {/* 5. قسم التخفيضات والعروض */}
       <section id="discounts" className="products-section fade-in-section" style={{ scrollMarginTop: '100px' }}>
         <div className="section-header">
           <h2 className="section-title">{t.discounts}</h2>
-          <button className="view-all-btn" onClick={() => navigate('/products')}>{t.viewAll}</button>
+          <button 
+            className="view-all-btn" 
+            onClick={() => navigate('/products', { state: { offersOnly: true } })}
+          >
+            {t.viewAll}
+          </button>
         </div>
         <div className="products-grid">
-          {products.map((prod, index) => (
-            <div key={prod.id} className="product-card" style={{ '--card-index': index }}>
-              <span className="product-badge">{prod.badge}</span>
-              <div className="product-image-container"><span>photo</span></div>
-              <div className="product-info">
-                <h3 className="product-title">{prod.title}</h3>
-                <div className="product-price-stock">
-                  <span className="product-status"><span className="status-dot"></span> {prod.status}</span>
-                  <span className="product-price">{prod.price} دج</span>
-                </div>
-                <button 
-                  className="add-to-cart-btn" 
-                  onClick={() => onAddToCart && onAddToCart(prod)}
-                >
-                  {t.addToCart}
-                </button>
-              </div>
-            </div>
-          ))}
+          {loading ? (
+            <p style={{ gridColumn: '1 / -1', textAlign: 'center', color: '#94a3b8' }}>{isRtl ? 'جاري التحميل...' : 'Loading...'}</p>
+          ) : (
+            (discountProducts.length > 0 ? discountProducts : products.slice(0, 5)).map((prod, idx) => renderProductCard(prod, idx))
+          )}
         </div>
       </section>
 
@@ -194,48 +280,61 @@ export default function MainContent({ currentLang, onAddToCart }) {
       <section id="digital" className="products-section fade-in-section" style={{ scrollMarginTop: '100px' }}>
         <div className="section-header">
           <h2 className="section-title">{t.digitalProducts}</h2>
-          <button className="view-all-btn" onClick={() => navigate('/products')}>{t.viewAll}</button>
+          <button 
+            className="view-all-btn" 
+            onClick={() => navigate('/products', { state: { category: 'بطاقات رقمية' } })}
+          >
+            {t.viewAll}
+          </button>
         </div>
         <div className="products-grid">
-          {products.map((prod, index) => (
-            <div key={prod.id} className="product-card" style={{ '--card-index': index }}>
-              <span className="product-badge">رقمي</span>
-              <div className="product-image-container"><span>photo</span></div>
-              <div className="product-info">
-                <h3 className="product-title" title="بطاقة شحن 20$ | PSN">بطاقة شحن 20$ | PSN</h3>
-                <div className="product-price-stock">
-                  <span className="product-status"><span className="status-dot"></span> متوفر فوري</span>
-                  <span className="product-price">4500 دج</span>
-                </div>
-                <button 
-                  className="add-to-cart-btn" 
-                  onClick={() => onAddToCart && onAddToCart({ id: `digital-${prod.id}`, title: "بطاقة شحن 20$ | PSN", price: 4500 })}
-                >
-                  {t.addToCart}
-                </button>
-              </div>
-            </div>
-          ))}
+          {loading ? (
+            <p style={{ gridColumn: '1 / -1', textAlign: 'center', color: '#94a3b8' }}>{isRtl ? 'جاري التحميل...' : 'Loading...'}</p>
+          ) : (
+            (digitalProducts.length > 0 ? digitalProducts : products.slice(0, 5)).map((prod, idx) => renderProductCard(prod, idx))
+          )}
         </div>
       </section>
 
-      {/* 7. قسم جميع أقسام المتجر */}
+      {/* 7. قسم المجسمات */}
+      <section id="figures" className="products-section fade-in-section" style={{ scrollMarginTop: '100px' }}>
+        <div className="section-header">
+          <h2 className="section-title">
+            {t.figuresTitle || figuresTitles[currentLang] || figuresTitles['ar']}
+          </h2>
+          <button 
+            className="view-all-btn" 
+            onClick={() => navigate('/products', { state: { category: 'مجسمات' } })}
+          >
+            {t.viewAll}
+          </button>
+        </div>
+        <div className="products-grid">
+          {loading ? (
+            <p style={{ gridColumn: '1 / -1', textAlign: 'center', color: '#94a3b8' }}>{isRtl ? 'جاري التحميل...' : 'Loading...'}</p>
+          ) : (
+            (figuresProducts.length > 0 ? figuresProducts : products.slice(0, 5)).map((prod, idx) => renderProductCard(prod, idx))
+          )}
+        </div>
+      </section>
+
+      {/* 8. قسم جميع أقسام المتجر */}
       <section id="all-categories" className="store-categories-section fade-in-section">
         <h2 className="section-title">{t.allCategories}</h2>
         <div className="store-categories-grid">
           {[
-            { id: 1, image: "/a9sam(1).jpg" },
-            { id: 2, image: "/a9sam(2).jpg" },
-            { id: 3, image: "/a9sam(3).jpg" },
-            { id: 4, image: "/a9sam(4).jpg" },
-            { id: 5, image: "/a9sam(5).jpg" },
-            { id: 6, image: "/a9sam(6).jpg" },
+            { id: 1, image: "/a9sam(1).jpg", category: "ألعاب" },
+            { id: 2, image: "/a9sam(2).jpg", category: "بطاقات رقمية" },
+            { id: 3, image: "/a9sam(3).jpg", category: "مجسمات" },
+            { id: 4, image: "/a9sam(4).jpg", category: "إكسسوارات" },
+            { id: 5, image: "/a9sam(5).jpg", category: "أجهزة الألعاب" },
+            { id: 6, image: "/a9sam(6).jpg", category: "اجهزة مستعملة" },
           ].map((item, index) => (
             <div 
               key={item.id} 
               className="store-category-box" 
               style={{ '--box-index': index }}
-              onClick={() => navigate('/products')}
+              onClick={() => navigate('/products', { state: { category: item.category } })}
             >
               <img src={item.image} alt={`Category ${item.id}`} className="store-box-img" />
             </div>
@@ -243,7 +342,7 @@ export default function MainContent({ currentLang, onAddToCart }) {
         </div>
       </section>
 
-      {/* 8. قسم متابعتنا على وسائل التواصل */}
+      {/* 9. قسم وسائل التواصل */}
       <section className="social-section fade-in-section">
         <h2 className="section-title">{t.followUs}</h2>
         <div className="social-circles-grid">

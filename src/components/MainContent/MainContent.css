@@ -46,7 +46,7 @@
 .categories-section,
 .products-section {
   width: 100%;
-  max-width: 1300px;
+  max-width: 1400px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -137,11 +137,11 @@
   border-color: rgba(255, 255, 255, 0.3);
 }
 
-/* شبكة المنتجات */
+/* شبكة المنتجات (5 كروت في الصف) */
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
   width: 100%;
   justify-content: center;
 }
@@ -304,7 +304,7 @@
 .store-categories-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
+  gap: 60px;
   width: 100%;
   justify-content: center;
 }
@@ -314,10 +314,10 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 20px;
   padding: 0;
-  overflow: hidden; /* يضمن احتواء الصورة وعدم خروجها عن حواف المستطيل */
+  overflow: hidden;
   position: relative;
   cursor: pointer;
-  height: 190px; /* ارتفاع متناسق مع عرض المستطيل */
+  height: 190px;
   box-sizing: border-box;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
   opacity: 0;
@@ -337,11 +337,10 @@
   box-shadow: 0 15px 35px rgba(255, 255, 255, 0.15);
 }
 
-/* ضبط الصورة داخل المستطيل */
 .store-box-img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* لقص وتكييف الصورة بانسجام دون تمطيط */
+  object-fit: cover;
   display: block;
   transition: transform 0.4s ease;
 }
@@ -372,7 +371,7 @@
 }
 
 .social-circle {
-  width: 190px;
+  width: 180px;
   height: 170px;
   border-radius: 50%;
   background: #ffffff;
@@ -403,22 +402,58 @@
 }
 
 .social-img {
-  width: 55%;
-  height: 55%;
-  object-fit: contain;
-  transition: transform 0.3s ease;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  border-radius: 50% !important;
 }
 
 .social-circle:hover .social-img {
   transform: scale(1.1);
 }
 
+/* عنصر الفئة الكلي (الدائرة + العنوان) */
+.category-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.category-item:hover {
+  transform: translateY(-4px);
+}
+
+.category-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+  text-align: center;
+  transition: color 0.3s ease;
+  white-space: nowrap;
+}
+
+.category-item:hover .category-name {
+  color: #b6acac;
+}
+
 /* ====================================================
    تجاوب الشاشات (Media Queries) 
    ==================================================== */
 
-/* الأجهزة اللوحية والشاشات المتوسطة */
+@media (max-width: 1200px) {
+  .products-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
 @media (max-width: 992px) {
+  .products-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
   .store-categories-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
@@ -437,34 +472,7 @@
     height: 125px;
   }
 }
-/* عنصر الفئة الكلي (الدائرة + العنوان) */
-.category-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  transition: transform 0.3s ease;
-}
 
-.category-item:hover {
-  transform: translateY(-4px);
-}
-
-/* عنوان الفئة تحت الدائرة */
-.category-name {
-  font-size: 13px;
-  font-weight: 600;
-  color: #ffffff;
-  text-align: center;
-  transition: color 0.3s ease;
-  white-space: nowrap;
-}
-
-.category-item:hover .category-name {
-  color: #b6acac;
-}
-/* الهواتف الذكية */
 @media (max-width: 768px) {
   .store-main-container {
     padding: 30px 4%;
@@ -526,7 +534,6 @@
   }
 }
 
-/* الهواتف الصغيرة جداً */
 @media (max-width: 480px) {
   .categories-grid {
     grid-template-columns: repeat(3, 1fr);
@@ -539,7 +546,7 @@
   }
   
   .store-categories-grid {
-    grid-template-columns: 1fr; /* عرض مستطيل واحد كبير بكل صف للهواتف الصغيرة */
+    grid-template-columns: 1fr;
     gap: 12px;
   }
 

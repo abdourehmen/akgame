@@ -12,6 +12,14 @@ export default function Navbar({ currentLang, setLang, onOpenCart, cartCount }) 
   const navigate = useNavigate();
   const location = useLocation();
 
+  // ترجمة عنوان قسم المجسمات للغات المتعددة
+  const figuresTitles = {
+    ar: 'المجسمات',
+    en: 'Figures',
+    fr: 'Figurines',
+    es: 'Figuras'
+  };
+
   // إغلاق قائمة اللغات عند الضغط خارجها
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -79,6 +87,9 @@ export default function Navbar({ currentLang, setLang, onOpenCart, cartCount }) 
           <a href="#bestsellers" className="nav-link" onClick={(e) => handleNavClick(e, 'bestsellers')}>{t.bestSellers}</a>
           <a href="#discounts" className="nav-link" onClick={(e) => handleNavClick(e, 'discounts')}>{t.discounts}</a>
           <a href="#digital" className="nav-link" onClick={(e) => handleNavClick(e, 'digital')}>{t.digitalProducts}</a>
+          <a href="#figures" className="nav-link" onClick={(e) => handleNavClick(e, 'figures')}>
+            {t.figures || figuresTitles[currentLang] || figuresTitles['ar']}
+          </a>
         </nav>
 
         {/* أدوات التحكم والإجراءات */}

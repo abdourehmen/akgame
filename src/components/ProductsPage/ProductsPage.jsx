@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Filter, ArrowRight, ArrowLeft, Gamepad2 } from 'lucide-react';
 import { translations } from '../../locales/translations';
 import { supabase } from '../../supabaseClient';
+import { useLocation } from 'react-router-dom';
 import './ProductsPage.css';
 
 export default function ProductsPage({ currentLang, onAddToCart }) {
   const isRtl = currentLang === 'ar';
+  const location = useLocation();
 
   const storeTranslations = {
     ar: {
@@ -17,8 +19,9 @@ export default function ProductsPage({ currentLang, onAddToCart }) {
       inStockOnly: 'المتوفر فقط',
       offersOnly: 'العروض فقط',
       newlyArrived: 'وصل حديثاً (آخر 30 يوماً)',
+      bestSellersOnly: 'الأكثر مبيعاً',
       price: 'السعر (دج)',
-      platformGames: 'المنصة (ألعاب)',
+      categoriesTitle: 'الأقسام',
       addToCart: 'اضف الى السلة',
       inStock: 'متوفر',
       outOfStock: 'غير متوفر',
@@ -36,8 +39,9 @@ export default function ProductsPage({ currentLang, onAddToCart }) {
       inStockOnly: 'In stock only',
       offersOnly: 'Offers only',
       newlyArrived: 'Newly arrived (last 30 days)',
+      bestSellersOnly: 'Best Sellers',
       price: 'Price (DZD)',
-      platformGames: 'Platform (Games)',
+      categoriesTitle: 'Categories',
       addToCart: 'Add to Cart',
       inStock: 'In Stock',
       outOfStock: 'Out of Stock',
@@ -55,8 +59,9 @@ export default function ProductsPage({ currentLang, onAddToCart }) {
       inStockOnly: 'En stock uniquement',
       offersOnly: 'Offres uniquement',
       newlyArrived: 'Nouveautés (30 derniers jours)',
+      bestSellersOnly: 'Meilleures ventes',
       price: 'Prix (DZD)',
-      platformGames: 'Plateforme (Jeux)',
+      categoriesTitle: 'Catégories',
       addToCart: 'Ajouter au panier',
       inStock: 'En Stock',
       outOfStock: 'Rupture de stock',
@@ -74,8 +79,9 @@ export default function ProductsPage({ currentLang, onAddToCart }) {
       inStockOnly: 'Solo en stock',
       offersOnly: 'Solo ofertas',
       newlyArrived: 'Novedades (últimos 30 días)',
+      bestSellersOnly: 'Más vendidos',
       price: 'Precio (DZD)',
-      platformGames: 'Plataforma (Juegos)',
+      categoriesTitle: 'Categorías',
       addToCart: 'Añadir al carrito',
       inStock: 'En Stock',
       outOfStock: 'Agotado',
@@ -91,17 +97,34 @@ export default function ProductsPage({ currentLang, onAddToCart }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // حالات التحديد الديناميكي
+  // حالات التحديد الديناميكي (قراءة القسم الممرر افتراضياً)
   const [selectedPlatform, setSelectedPlatform] = useState('');
-  const [selectedGamePlatform, setSelectedGamePlatform] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState(location.state?.category || '');
 
-  // حالات التوفر
+  // حالات التوفر (مستقبلة القيم الافتراضية من location.state)
   const [inStockOnly, setInStockOnly] = useState(false);
-  const [offersOnly, setOffersOnly] = useState(false);
-  const [newlyArrived, setNewlyArrived] = useState(false);
+  const [offersOnly, setOffersOnly] = useState(location.state?.offersOnly || false);
+  const [newlyArrived, setNewlyArrived] = useState(location.state?.newlyArrived || false);
+  const [bestSellersOnly, setBestSellersOnly] = useState(location.state?.bestSellersOnly || false);
+
+  // تحديث حالة الفلاتر إذا تغيرت الحالة الممررة عبر التوجيه
+  useEffect(() => {
+    if (location.state?.offersOnly !== undefined) {
+      setOffersOnly(location.state.offersOnly);
+    }
+    if (location.state?.newlyArrived !== undefined) {
+      setNewlyArrived(location.state.newlyArrived);
+    }
+    if (location.state?.bestSellersOnly !== undefined) {
+      setBestSellersOnly(location.state.bestSellersOnly);
+    }
+    if (location.state?.category !== undefined) {
+      setSelectedCategory(location.state.category);
+    }
+  }, [location.state]);
 
   // حالة الترتيب حسب السعر
-  const [sortBy, setSortBy] = useState('newest'); // 'newest', 'price_asc', 'price_desc'
+  const [sortBy, setSortBy] = useState('newest');
 
   // متغيرات شريط السعر
   const [minPrice, setMinPrice] = useState(0);
@@ -118,7 +141,17 @@ export default function ProductsPage({ currentLang, onAddToCart }) {
   const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
 
   const platforms = ['الكل', 'PS5', 'Xbox Series', 'PS4', 'Switch', 'Switch 2'];
-  const gamePlatforms = ['الكل', 'PS5', 'PS4', 'Xbox Series', 'Xbox One', 'Switch', 'Switch 2'];
+  
+  // قائمة الأقسام
+  const categoriesList = [
+    { key: 'الكل', ar: 'الكل', en: 'All', fr: 'Tous', es: 'Todos' },
+    { key: 'إكسسوارات', ar: 'إكسسوارات', en: 'Accessories', fr: 'Accessoires', es: 'Accesorios' },
+    { key: 'ألعاب', ar: 'ألعاب', en: 'Games', fr: 'Jeux', es: 'Juegos' },
+    { key: 'بطاقات رقمية', ar: 'بطاقات رقمية', en: 'Digital Cards', fr: 'Cartes Cadeaux', es: 'Tarjetas Digitales' },
+    { key: 'أجهزة الألعاب', ar: 'أجهزة الألعاب', en: 'Consoles', fr: 'Consoles', es: 'Consolas' },
+    { key: 'اجهزة مستعملة', ar: 'اجهزة مستعملة', en: 'Used Consoles', fr: "Consoles d'occasion", es: 'Consolas usadas' },
+    { key: 'مجسمات', ar: 'مجسمات', en: 'Figures', fr: 'Figurines', es: 'Figuras' },
+  ];
 
   // جلب البيانات مع ربط كافّة الفلاتر بـ Supabase
   useEffect(() => {
@@ -127,33 +160,42 @@ export default function ProductsPage({ currentLang, onAddToCart }) {
       try {
         let query = supabase.from('products').select('*');
 
-        // 1. فلترة المنصة العامة أو منصة الألعاب
-        const activePlatform = selectedPlatform !== 'الكل' ? selectedPlatform : (selectedGamePlatform !== 'الكل' ? selectedGamePlatform : '');
-        if (activePlatform) {
-          query = query.eq('platform', activePlatform);
+        // 1. فلترة المنصة العامة
+        if (selectedPlatform && selectedPlatform !== 'الكل') {
+          query = query.eq('platform', selectedPlatform);
         }
 
-        // 2. فلتر المتوفر فقط
+        // 2. فلترة قسم المنتجات
+        if (selectedCategory && selectedCategory !== 'الكل') {
+          query = query.eq('category', selectedCategory);
+        }
+
+        // 3. فلتر المتوفر فقط
         if (inStockOnly) {
           query = query.eq('in_stock', true);
         }
 
-        // 3. فلتر العروض فقط (المنتجات التي تمتلك شارة تخفيض)
+        // 4. فلتر العروض فقط
         if (offersOnly) {
           query = query.or('badge.eq.تخفيض,badge.eq.Sale,badge.eq.Promo,badge.eq.Oferta');
         }
 
-        // 4. فلتر وصل حديثاً (آخر 30 يوماً)
+        // 5. فلتر وصل حديثاً (آخر 30 يوماً)
         if (newlyArrived) {
           const thirtyDaysAgo = new Date();
           thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
           query = query.gte('created_at', thirtyDaysAgo.toISOString());
         }
 
-        // 5. فلتر نطاق السعر
+        // 6. فلتر الأكثر مبيعاً
+        if (bestSellersOnly) {
+          query = query.or('badge.eq.الأكثر مبيعا,badge.eq.Best Seller,badge.eq.Meilleures ventes,badge.eq.Más vendidos');
+        }
+
+        // 7. فلتر نطاق السعر
         query = query.gte('price', minPrice).lte('price', maxPrice);
 
-        // 6. الترتيب حسب الخيار المختار
+        // 8. الترتيب حسب الخيار المختار
         if (sortBy === 'price_asc') {
           query = query.order('price', { ascending: true });
         } else if (sortBy === 'price_desc') {
@@ -178,7 +220,7 @@ export default function ProductsPage({ currentLang, onAddToCart }) {
     }
 
     fetchProducts();
-  }, [selectedPlatform, selectedGamePlatform, inStockOnly, offersOnly, newlyArrived, minPrice, maxPrice, sortBy]);
+  }, [selectedPlatform, selectedCategory, inStockOnly, offersOnly, newlyArrived, bestSellersOnly, minPrice, maxPrice, sortBy]);
 
   return (
     <div className="products-page-container" dir={isRtl ? 'rtl' : 'ltr'}>
@@ -217,7 +259,6 @@ export default function ProductsPage({ currentLang, onAddToCart }) {
                   className={`filter-item-btn ${(selectedPlatform === plat || (!selectedPlatform && plat === 'الكل')) ? 'active' : ''}`}
                   onClick={() => {
                     setSelectedPlatform(plat === 'الكل' ? '' : plat);
-                    setSelectedGamePlatform('');
                   }}
                 >
                   {plat}
@@ -267,6 +308,18 @@ export default function ProductsPage({ currentLang, onAddToCart }) {
                 </div>
               </label>
 
+              <label className="toggle-item">
+                <span className="toggle-label">{t.bestSellersOnly}</span>
+                <div className="toggle-switch">
+                  <input 
+                    type="checkbox" 
+                    checked={bestSellersOnly} 
+                    onChange={() => setBestSellersOnly(!bestSellersOnly)} 
+                  />
+                  <span className="toggle-slider"></span>
+                </div>
+              </label>
+
             </div>
           </div>
 
@@ -310,22 +363,21 @@ export default function ProductsPage({ currentLang, onAddToCart }) {
             </div>
           </div>
 
-          {/* العمود الرابع: الفئات (الكبسولات) */}
+          {/* العمود الرابع: الأقسام */}
           <div className="filter-col">
             <h3 className="filter-col-title" style={{ width: '100%', textAlign: isRtl ? 'right' : 'left' }}>
-              {t.platformGames}
+              {t.categoriesTitle}
             </h3>
             <div className="filter-pills-grid">
-              {gamePlatforms.map((gPlat) => (
+              {categoriesList.map((catObj) => (
                 <button 
-                  key={gPlat} 
-                  className={`filter-pill-btn ${(selectedGamePlatform === gPlat || (!selectedGamePlatform && gPlat === 'الكل')) ? 'active' : ''}`}
+                  key={catObj.key} 
+                  className={`filter-pill-btn ${(selectedCategory === catObj.key || (!selectedCategory && catObj.key === 'الكل')) ? 'active' : ''}`}
                   onClick={() => {
-                    setSelectedGamePlatform(gPlat === 'الكل' ? '' : gPlat);
-                    setSelectedPlatform('');
+                    setSelectedCategory(catObj.key === 'الكل' ? '' : catObj.key);
                   }}
                 >
-                  <span className="pill-text">{gPlat}</span>
+                  <span className="pill-text">{catObj[currentLang] || catObj.ar}</span>
                   <Gamepad2 size={16} className="pill-icon" />
                 </button>
               ))}
