@@ -1,10 +1,34 @@
 import React from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Phone, MapPin } from 'lucide-react';
 import { translations } from '../../locales/translations';
 import './Footer.css';
 
 export default function Footer({ currentLang }) {
   const t = translations?.[currentLang]?.footer || translations?.['ar']?.footer || {};
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleNavClick = (e, targetId) => {
+    e.preventDefault();
+    
+    if (location.pathname !== '/') {
+      // الانتقال أولاً للصفحة الرئيسية ثم التمرير للقسم
+      navigate('/');
+      setTimeout(() => {
+        const element = document.getElementById(targetId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 150);
+    } else {
+      // إذا كان في الصفحة الرئيسية ينزل مباشرة للقسم
+      const element = document.getElementById(targetId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
 
   return (
     <footer className="footer-container">
@@ -31,10 +55,10 @@ export default function Footer({ currentLang }) {
         <div className="footer-col links-col">
           <h3 className="footer-title">{t.linksTitle}</h3>
           <ul className="footer-links-list">
-            <li><a href="#new">{t.accessories}</a></li>
-            <li><a href="#bestsellers">{t.subscriptions}</a></li>
-            <li><a href="#discounts">{t.devices}</a></li>
-            <li><a href="#digital">{t.consoles}</a></li>
+            <li><a href="#new" onClick={(e) => handleNavClick(e, 'new')}>{t.accessories}</a></li>
+            <li><a href="#bestsellers" onClick={(e) => handleNavClick(e, 'bestsellers')}>{t.subscriptions}</a></li>
+            <li><a href="#discounts" onClick={(e) => handleNavClick(e, 'discounts')}>{t.devices}</a></li>
+            <li><a href="#digital" onClick={(e) => handleNavClick(e, 'digital')}>{t.consoles}</a></li>
           </ul>
         </div>
 

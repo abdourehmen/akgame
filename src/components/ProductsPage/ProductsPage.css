@@ -253,6 +253,144 @@
   border-radius: 50%;
   cursor: pointer;
 }
+/* تنسيقات قسم التوفر (أزرار التبديل) */
+.toggle-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.toggle-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  width: 100%;
+}
+
+.toggle-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+}
+
+/* صندوق زر التبديل */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+/* إخفاء صندوق الاختيار الافتراضي */
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* تصميم مسار الزر (الخلفية) */
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #d8dce8;
+  /* إضافة تأثير حركة ناعم جداً للخلفية */
+  transition: background-color 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border-radius: 20px;
+}
+
+/* تصميم الدائرة البيضاء */
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  bottom: 2px;
+  background-color: white;
+  border-radius: 50%;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  /* حركة انزلاق ناعمة للدائرة */
+  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* -------------------------------------------
+   إصلاح الحركة والتموضع حسب اللغة
+------------------------------------------- */
+
+/* في اللغة العربية (RTL): الدائرة تبدأ من اليمين وتنزلق لليسار */
+[dir="rtl"] .toggle-slider:before {
+  right: 2px;
+}
+[dir="rtl"] input:checked + .toggle-slider:before {
+  transform: translateX(-16px);
+}
+
+/* في اللغات الأجنبية (LTR): الدائرة تبدأ من اليسار وتنزلق لليمين */
+[dir="ltr"] .toggle-slider:before {
+  left: 2px;
+}
+[dir="ltr"] input:checked + .toggle-slider:before {
+  transform: translateX(16px);
+}
+
+/* تغيير لون الخلفية عند التفعيل */
+input:checked + .toggle-slider {
+  background-color: #0f172a;
+}
+/* تنسيق شبكة المنصات (أزرار الكبسولة) */
+.filter-pills-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  width: 100%;
+  justify-content: flex-start; /* يبدأ من اليمين في العربية ومن اليسار في الإنجليزية */
+}
+
+/* تصميم الزر (الكبسولة) */
+.filter-pill-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1; /* إطار رمادي فاتح */
+  color: #475569; /* لون النص */
+  padding: 6px 16px;
+  border-radius: 30px; /* جعل الحواف دائرية بالكامل */
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filter-pill-btn:hover {
+  border-color: #94a3b8;
+  background: #f8fafc;
+}
+
+/* لون الأيقونة الافتراضي (داكن) */
+.pill-icon {
+  color: #0f172a; 
+  transition: color 0.3s ease;
+}
+
+/* -------------------------------------------
+   الحالة النشطة (Active) - اللون الأزرق
+------------------------------------------- */
+.filter-pill-btn.active {
+  border-color: #3b82f6; /* إطار أزرق */
+  color: #3b82f6; /* نص أزرق */
+  background: #ffffff;
+}
+
+.filter-pill-btn.active .pill-icon {
+  color: #3b82f6; /* تحويل الأيقونة للون الأزرق */
+}
 /* التجاوب مع الشاشات الأصغر */
 @media (max-width: 992px) {
   .products-grid-4 {

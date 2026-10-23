@@ -5,19 +5,53 @@ import Footer from './components/Footer/Footer';
 import Hero from './components/Hero/Hero';
 import FeaturesMarquee from './components/FeaturesMarquee/FeaturesMarquee';
 import MainContent from './components/MainContent/MainContent';
-// تأكد أن هذا الملف موجود فعلاً في هذا المسار
-import ProductsPage from './components/ProductsPage/ProductsPage'; 
+import ProductsPage from './components/ProductsPage/ProductsPage';
+import CartDrawer from './components/CartDrawer/CartDrawer';
 
 export default function App() {
   const [currentLang, setCurrentLang] = useState('ar');
+  const [isCartOpen, setIsCartOpen] = useState(false);
+
+  // قائمة منتجات تجريبية داخل السلة (مطابقة للصورة)
+  const [cartItems, setCartItems] = useState([
+    {
+      id: 1,
+      title: 'BATMAN: ARKHAM CITY | PS3 (NTSC-J)',
+      price: 9000,
+      quantity: 1,
+      image: '/logo.jpg'
+    }
+  ]);
+
+  // تحديث الكميات
+  const handleUpdateQuantity = (id, newQty) => {
+    if (newQty <= 0) {
+      handleRemoveItem(id);
+    } else {
+      setCartItems(cartItems.map(item => item.id === id ? { ...item, quantity: newQty } : item));
+    }
+  };
+
+  // حذف عنصر
+  const handleRemoveItem = (id) => {
+    setCartItems(cartItems.filter(item => item.id !== id));
+  };
+
+  const totalItemsCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <Router>
       <div className="app-container">
-        <Navbar currentLang={currentLang} setLang={setCurrentLang} />
+        
+        {/* شريط التنقل مع زر السلة */}
+        <Navbar 
+          currentLang={currentLang} 
+          setLang={setCurrentLang} 
+          onOpenCart={() => setIsCartOpen(true)}
+          cartCount={totalItemsCount}
+        />
 
         <Routes>
-          {/* الصفحة الرئيسية */}
           <Route path="/" element={
             <>
               <Hero currentLang={currentLang} />
@@ -26,14 +60,22 @@ export default function App() {
             </>
           } />
           
-          {/* صفحة المنتجات الجديدة */}
           <Route path="/products" element={<ProductsPage currentLang={currentLang} />} />
-
-          {/* مسار احتياطي: إذا كان الرابط خاطئاً، عد إلى الصفحة الرئيسية */}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
         
         <Footer currentLang={currentLang} />
+
+        {/* مكون السلة الجانبي */}
+        <CartDrawer 
+          isOpen={isCartOpen}
+          onClose={() => setIsCartOpen(false)}
+          cartItems={cartItems}
+          onUpdateQuantity={handleUpdateQuantity}
+          onRemoveItem={handleRemoveItem}
+          currentLang={currentLang}
+        />
+
       </div>
     </Router>
   );
