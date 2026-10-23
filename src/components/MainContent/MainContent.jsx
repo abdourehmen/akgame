@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { translations } from '../../locales/translations';
 import './MainContent.css';
 
 export default function MainContent({ currentLang }) {
   const t = translations[currentLang]?.home || translations['ar'].home;
+  const navigate = useNavigate(); // تفعيل أداة الانتقال بين الصفحات
 
-  // تفعيل مراقبة التمرير لتشغيل الأنيميشن عند النزول
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -15,7 +16,7 @@ export default function MainContent({ currentLang }) {
           }
         });
       },
-      { threshold: 0.1 } // يبدأ الأنيميشن عندما يظهر 10% من القسم
+      { threshold: 0.1 }
     );
 
     const sections = document.querySelectorAll('.fade-in-section');
@@ -38,7 +39,6 @@ export default function MainContent({ currentLang }) {
 
   return (
     <main className="store-main-container">
-      {/* 1. شريط البحث */}
       <div className="search-section fade-in-section">
         <input 
           type="text" 
@@ -56,18 +56,17 @@ export default function MainContent({ currentLang }) {
               key={index} 
               className="category-circle" 
               style={{ '--cat-index': index }}
+              onClick={() => navigate('/products')} // إضافة الانتقال هنا
             >
-              {/* إذا أضفت صوراً لاحقاً ستكون هنا */}
             </div>
           ))}
         </div>
       </section>
 
-      {/* 3. قسم الاكسسوارات (الجديد) */}
       <section id="new" className="products-section fade-in-section" style={{ scrollMarginTop: '100px' }}>
         <div className="section-header">
           <h2 className="section-title">{t.newProducts}</h2>
-          <button className="view-all-btn">{t.viewAll}</button>
+          <button className="view-all-btn" onClick={() => navigate('/products')}>{t.viewAll}</button>
         </div>
         <div className="products-grid">
           {products.map((prod, index) => (
@@ -87,11 +86,10 @@ export default function MainContent({ currentLang }) {
         </div>
       </section>
 
-      {/* 4. قسم الاشتراكات (الأكثر مبيعا) */}
       <section id="bestsellers" className="products-section fade-in-section" style={{ scrollMarginTop: '100px' }}>
         <div className="section-header">
           <h2 className="section-title">{t.bestSellers}</h2>
-          <button className="view-all-btn">{t.viewAll}</button>
+          <button className="view-all-btn" onClick={() => navigate('/products')}>{t.viewAll}</button>
         </div>
         <div className="products-grid">
           {products.map((prod, index) => (
@@ -111,11 +109,10 @@ export default function MainContent({ currentLang }) {
         </div>
       </section>
 
-      {/* 5. قسم الأجهزة (التخفيضات) */}
       <section id="discounts" className="products-section fade-in-section" style={{ scrollMarginTop: '100px' }}>
         <div className="section-header">
           <h2 className="section-title">{t.discounts}</h2>
-          <button className="view-all-btn">{t.viewAll}</button>
+          <button className="view-all-btn" onClick={() => navigate('/products')}>{t.viewAll}</button>
         </div>
         <div className="products-grid">
           {products.map((prod, index) => (
@@ -135,11 +132,10 @@ export default function MainContent({ currentLang }) {
         </div>
       </section>
 
-      {/* 6. قسم الألعاب (المنتجات الرقمية) */}
       <section id="digital" className="products-section fade-in-section" style={{ scrollMarginTop: '100px' }}>
         <div className="section-header">
           <h2 className="section-title">{t.digitalProducts}</h2>
-          <button className="view-all-btn">{t.viewAll}</button>
+          <button className="view-all-btn" onClick={() => navigate('/products')}>{t.viewAll}</button>
         </div>
         <div className="products-grid">
           {products.map((prod, index) => (
@@ -159,7 +155,7 @@ export default function MainContent({ currentLang }) {
         </div>
       </section>
 
-      {/* 7. قسم جميع أقسام المتجر في الأسفل */}
+      {/* 7. قسم جميع أقسام المتجر */}
       <section id="all-categories" className="store-categories-section fade-in-section">
         <h2 className="section-title">{t.allCategories}</h2>
         <div className="store-categories-grid">
@@ -175,6 +171,7 @@ export default function MainContent({ currentLang }) {
               key={item.id} 
               className="store-category-box" 
               style={{ '--box-index': index }}
+              onClick={() => navigate('/products')} // إضافة الانتقال هنا
             >
               <img src={item.image} alt="Category" className="store-box-img" />
             </div>
@@ -182,7 +179,6 @@ export default function MainContent({ currentLang }) {
         </div>
       </section>
 
-      {/* 8. قسم تابعونا (شبكات التواصل الاجتماعي) */}
       <section className="social-section fade-in-section">
         <h2 className="section-title">{t.followUs}</h2>
         <div className="social-circles-grid">

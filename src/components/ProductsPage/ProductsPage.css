@@ -1,0 +1,288 @@
+.products-page-container {
+  background-color: #0a0a0c;
+  min-height: 100vh;
+  padding: 120px 5% 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #ffffff;
+}
+
+.page-main-title {
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 30px;
+  color: #ffffff;
+  text-align: center;
+}
+/* صندوق الفلترة - الشكل الأبيض النظيف */
+.advanced-filter-box {
+  width: 100%;
+  max-width: 1300px;
+  background: #ffffff; /* خلفية بيضاء */
+  border: 1px solid #e2e8f0; /* إطار رمادي فاتح */
+  border-radius: 16px;
+  margin-bottom: 50px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); /* ظل ناعم */
+  color: #0f172a; /* لون نص داكن */
+}
+
+/* هيدر الفلترة */
+.filter-box-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.filter-title-side {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 16px;
+  color: #0f172a;
+}
+
+.sort-btn {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
+  padding: 6px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.sort-btn:hover {
+  background: #e2e8f0;
+}
+
+/* جسم الفلترة والأعمدة */
+.filter-box-body {
+  display: flex;
+  width: 100%;
+  padding: 20px 0;
+}
+
+.filter-col {
+  flex: 1;
+  padding: 0 20px;
+  border-left: 1px solid #e2e8f0; /* خط فاصل رمادي فاتح */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ترتيب الأعمدة للغة العربية (RTL) */
+[dir="rtl"] .filter-col:last-child {
+  border-left: none;
+}
+[dir="ltr"] .filter-col {
+  border-left: none;
+  border-right: 1px solid #e2e8f0;
+}
+[dir="ltr"] .filter-col:last-child {
+  border-right: none;
+}
+
+.filter-col-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 25px;
+  color: #0f172a; /* لون عناوين الأعمدة أسود */
+}
+
+/* ترتيب الأزرار ليكون مرناً */
+.filter-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+/* تنسيق أزرار الفلترة الفاتحة */
+.filter-item-btn {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: auto;
+}
+
+/* عند تمرير الماوس، يتحول الزر للون الأسود الفخم */
+.filter-item-btn:hover,
+.filter-item-btn.active {
+  border-color: #0a0a0c;
+  color: #ffffff;
+  background: #0a0a0c;
+}
+
+/* شبكة المنتجات (4 في كل صف) */
+.products-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  width: 100%;
+  max-width: 1300px;
+  margin-bottom: 50px;
+}
+
+/* ترقيم الصفحات */
+.pagination-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.page-num-btn, .page-nav-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.page-num-btn:hover, .page-nav-btn:hover {
+  background: #ffffff;
+  color: #0a0a0c;
+}
+
+.page-dots {
+  color: #94a3b8;
+  letter-spacing: 2px;
+  font-weight: bold;
+}
+/* شريط السعر الديناميكي المزدوج */
+.price-slider-wrapper {
+  width: 100%;
+  max-width: 250px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 10px;
+}
+
+.price-values {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.multi-range-slider {
+  position: relative;
+  width: 100%;
+  height: 6px;
+  display: flex;
+  align-items: center;
+}
+
+.slider-track {
+  position: absolute;
+  width: 100%;
+  height: 6px;
+  background-color: #e2e8f0; /* خلفية الشريط رمادية */
+  border-radius: 3px;
+  z-index: 1;
+}
+
+.slider-range {
+  position: absolute;
+  height: 6px;
+  background-color: #0f172a; /* الجزء المحدد أسود داكن */
+  border-radius: 3px;
+  z-index: 2;
+}
+
+/* تصميم مقابض السحب (Thumbs) لتبدو شفافة وفوق الشريط مباشرة */
+.thumb {
+  position: absolute;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  background: transparent;
+  pointer-events: none;
+  z-index: 3;
+  outline: none;
+  top: 0;
+  margin: 0;
+}
+
+/* تصميم الدائرة البيضاء التي يسحبها المستخدم */
+.thumb::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  pointer-events: all;
+  width: 20px;
+  height: 20px;
+  background-color: #ffffff;
+  border: 2px solid #0f172a;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  margin-top: -7px;
+}
+
+.thumb::-moz-range-thumb {
+  pointer-events: all;
+  width: 16px;
+  height: 16px;
+  background-color: #ffffff;
+  border: 2px solid #0f172a;
+  border-radius: 50%;
+  cursor: pointer;
+}
+/* التجاوب مع الشاشات الأصغر */
+@media (max-width: 992px) {
+  .products-grid-4 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .filter-box-body {
+    flex-direction: column;
+  }
+  
+  .filter-col {
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .filter-col:last-child {
+    border-bottom: none;
+  }
+
+  .products-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .products-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+}
