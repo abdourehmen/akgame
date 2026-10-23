@@ -1,18 +1,15 @@
 import React from 'react';
 import { Phone, MapPin } from 'lucide-react';
-// تأكد من صحة مسار الاستيراد حسب هيكل مجلداتك
 import { translations } from '../../locales/translations';
 import './Footer.css';
 
 export default function Footer({ currentLang }) {
-  // استخدام السطر الآمن لجلب الترجمة لمنع أي انهيار
   const t = translations?.[currentLang]?.footer || translations?.['ar']?.footer || {};
 
   return (
     <footer className="footer-container">
       <div className="footer-content">
         
-        {/* العمود الأيمن: تواصل معنا */}
         <div className="footer-col contact-col">
           <h3 className="footer-title">{t.contactTitle}</h3>
           <div className="contact-item">
@@ -29,24 +26,20 @@ export default function Footer({ currentLang }) {
           </div>
         </div>
 
-        {/* الخط الفاصل العمودي الأول */}
         <div className="footer-divider"></div>
 
-        {/* العمود الأوسط: العناوين */}
         <div className="footer-col links-col">
           <h3 className="footer-title">{t.linksTitle}</h3>
           <ul className="footer-links-list">
-            <li><a href="#accessories">{t.accessories}</a></li>
-            <li><a href="#subscriptions">{t.subscriptions}</a></li>
-            <li><a href="#devices">{t.devices}</a></li>
-            <li><a href="#consoles">{t.consoles}</a></li>
+            <li><a href="#new">{t.accessories}</a></li>
+            <li><a href="#bestsellers">{t.subscriptions}</a></li>
+            <li><a href="#discounts">{t.devices}</a></li>
+            <li><a href="#digital">{t.consoles}</a></li>
           </ul>
         </div>
 
-        {/* الخط الفاصل العمودي الثاني */}
         <div className="footer-divider"></div>
 
-        {/* العمود الأيسر: الشعار، وسائل التواصل، والنبذة */}
         <div className="footer-col brand-col">
           <div className="footer-logo-circle">
             <img src="/logo.jpg" alt="AKGAME Logo" className="footer-logo-img" />
@@ -79,10 +72,8 @@ export default function Footer({ currentLang }) {
 
       </div>
 
-      {/* الخط الفاصل السفلي */}
       <div className="footer-bottom-line"></div>
 
-      {/* حقوق الملكية */}
       <div className="footer-copyright">
         {t.copyright}
       </div>

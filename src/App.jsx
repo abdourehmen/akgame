@@ -22,7 +22,7 @@ export default function App() {
       {/* 4. المحتوى الرئيسي للمتجر (البحث، الفئات، الأقسام والمنتجات) */}
       <MainContent currentLang={currentLang} />
       <Footer currentLang={currentLang} />
-      <Footer />
+      
     </div>
   );
   

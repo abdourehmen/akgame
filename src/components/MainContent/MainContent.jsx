@@ -64,7 +64,7 @@ export default function MainContent({ currentLang }) {
       </section>
 
       {/* 3. قسم الاكسسوارات (الجديد) */}
-      <section id="accessories" className="products-section fade-in-section">
+      <section id="new" className="products-section fade-in-section" style={{ scrollMarginTop: '100px' }}>
         <div className="section-header">
           <h2 className="section-title">{t.newProducts}</h2>
           <button className="view-all-btn">{t.viewAll}</button>
@@ -88,7 +88,7 @@ export default function MainContent({ currentLang }) {
       </section>
 
       {/* 4. قسم الاشتراكات (الأكثر مبيعا) */}
-      <section id="subscriptions" className="products-section fade-in-section">
+      <section id="bestsellers" className="products-section fade-in-section" style={{ scrollMarginTop: '100px' }}>
         <div className="section-header">
           <h2 className="section-title">{t.bestSellers}</h2>
           <button className="view-all-btn">{t.viewAll}</button>
@@ -112,7 +112,7 @@ export default function MainContent({ currentLang }) {
       </section>
 
       {/* 5. قسم الأجهزة (التخفيضات) */}
-      <section id="devices" className="products-section fade-in-section">
+      <section id="discounts" className="products-section fade-in-section" style={{ scrollMarginTop: '100px' }}>
         <div className="section-header">
           <h2 className="section-title">{t.discounts}</h2>
           <button className="view-all-btn">{t.viewAll}</button>
@@ -136,7 +136,7 @@ export default function MainContent({ currentLang }) {
       </section>
 
       {/* 6. قسم الألعاب (المنتجات الرقمية) */}
-      <section id="consoles" className="products-section fade-in-section">
+      <section id="digital" className="products-section fade-in-section" style={{ scrollMarginTop: '100px' }}>
         <div className="section-header">
           <h2 className="section-title">{t.digitalProducts}</h2>
           <button className="view-all-btn">{t.viewAll}</button>
