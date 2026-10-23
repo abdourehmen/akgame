@@ -27,7 +27,21 @@ export const translations = {
       bestSellers: "الأكثر مبيعا",
       discounts: "التخفيضات",
       digitalProducts: "المنتجات الرقمية",
-      viewAll: "عرض الكل"
+      viewAll: "عرض الكل",
+      addToCart: "اضف الى السلة",
+      allCategories: "جميع أقسام المتجر",
+      followUs: "تابعونا"
+    },
+    footer: {
+      contactTitle: "تواصل معنا",
+      address: "حسين داي الجزائر العاصمة",
+      linksTitle: "العناوين",
+      accessories: "الاكسسوارات",
+      subscriptions: "الاشتراكات",
+      devices: "الاجهزه",
+      consoles: "الالعاب",
+      description: "متجر متخصص في بيع وشراء وتبديل وإصلاح ألعاب الفيديو في الجزائر.",
+      copyright: "جميع حقوق محفوظة. 2026 AKGAME ®"
     }
   },
   en: {
@@ -58,7 +72,21 @@ export const translations = {
       bestSellers: "Best Sellers",
       discounts: "Discounts",
       digitalProducts: "Digital Products",
-      viewAll: "View All"
+      viewAll: "View All",
+      addToCart: "Add to Cart",
+      allCategories: "All Store Categories",
+      followUs: "Follow Us"
+    },
+    footer: {
+      contactTitle: "Contact Us",
+      address: "Hussein Dey, Algiers",
+      linksTitle: "Links",
+      accessories: "Accessories",
+      subscriptions: "Subscriptions",
+      devices: "Devices",
+      consoles: "Games",
+      description: "A store specialized in buying, selling, trading, and repairing video games in Algeria.",
+      copyright: "All rights reserved. 2026 AKGAME ®"
     }
   },
   fr: {
@@ -89,7 +117,21 @@ export const translations = {
       bestSellers: "Meilleures ventes",
       discounts: "Promotions",
       digitalProducts: "Produits Numériques",
-      viewAll: "Voir tout"
+      viewAll: "Voir tout",
+      addToCart: "Ajouter au panier",
+      allCategories: "Toutes les catégories du magasin",
+      followUs: "Suivez-nous"
+    },
+    footer: {
+      contactTitle: "Contactez-nous",
+      address: "Hussein Dey, Alger",
+      linksTitle: "Liens",
+      accessories: "Accessoires",
+      subscriptions: "Abonnements",
+      devices: "Appareils",
+      consoles: "Jeux",
+      description: "Un magasin spécialisé dans l'achat, la vente, l'échange et la réparation de jeux vidéo en Algérie.",
+      copyright: "Tous droits réservés. 2026 AKGAME ®"
     }
   },
   es: {
@@ -120,7 +162,21 @@ export const translations = {
       bestSellers: "Más vendidos",
       discounts: "Descuentos",
       digitalProducts: "Productos Digitales",
-      viewAll: "Ver todo"
+      viewAll: "Ver todo",
+      addToCart: "Añadir al carrito",
+      allCategories: "Todas las categorías de la tienda",
+      followUs: "Síguenos"
+    },
+    footer: {
+      contactTitle: "Contáctanos",
+      address: "Hussein Dey, Argel",
+      linksTitle: "Enlaces",
+      accessories: "Accesorios",
+      subscriptions: "Suscripciones",
+      devices: "Dispositivos",
+      consoles: "Juegos",
+      description: "Una tienda especializada en la compra, venta, intercambio y reparación de videojuegos en Argelia.",
+      copyright: "Todos los derechos reservados. 2026 AKGAME ®"
     }
   }
 };

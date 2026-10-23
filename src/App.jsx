@@ -3,7 +3,7 @@ import Navbar from './components/Navbar/Navbar';
 import Hero from './components/Hero/Hero';
 import FeaturesMarquee from './components/FeaturesMarquee/FeaturesMarquee';
 import MainContent from './components/MainContent/MainContent';
-
+import Footer from './components/Footer/Footer'; // (ح حسب مسار الملف لديك)
 export default function App() {
   // حالة تخزين اللغة الحالية (الافتراضية: العربية)
   const [currentLang, setCurrentLang] = useState('ar');
@@ -21,6 +21,8 @@ export default function App() {
 
       {/* 4. المحتوى الرئيسي للمتجر (البحث، الفئات، الأقسام والمنتجات) */}
       <MainContent currentLang={currentLang} />
+      <Footer currentLang={currentLang} />
+      <Footer />
     </div>
   );
   

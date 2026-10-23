@@ -47,7 +47,7 @@ export default function MainContent({ currentLang }) {
         />
       </div>
 
-    {/* 2. تصفح حسب الفئة */}
+      {/* 2. تصفح حسب الفئة */}
       <section className="categories-section fade-in-section">
         <h2 className="section-title">{t.categoriesTitle}</h2>
         <div className="categories-grid">
@@ -63,8 +63,8 @@ export default function MainContent({ currentLang }) {
         </div>
       </section>
 
-      {/* 3. قسم الجديد */}
-      <section id="new" className="products-section fade-in-section">
+      {/* 3. قسم الاكسسوارات (الجديد) */}
+      <section id="accessories" className="products-section fade-in-section">
         <div className="section-header">
           <h2 className="section-title">{t.newProducts}</h2>
           <button className="view-all-btn">{t.viewAll}</button>
@@ -80,15 +80,15 @@ export default function MainContent({ currentLang }) {
                   <span className="product-status"><span className="status-dot"></span> {prod.status}</span>
                   <span className="product-price">{prod.price}</span>
                 </div>
-                <button className="add-to-cart-btn">اضف الى السلة</button>
+                <button className="add-to-cart-btn">{t.addToCart}</button>
               </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* 4. الأكثر مبيعا */}
-      <section id="bestsellers" className="products-section fade-in-section">
+      {/* 4. قسم الاشتراكات (الأكثر مبيعا) */}
+      <section id="subscriptions" className="products-section fade-in-section">
         <div className="section-header">
           <h2 className="section-title">{t.bestSellers}</h2>
           <button className="view-all-btn">{t.viewAll}</button>
@@ -104,15 +104,15 @@ export default function MainContent({ currentLang }) {
                   <span className="product-status"><span className="status-dot"></span> {prod.status}</span>
                   <span className="product-price">{prod.price}</span>
                 </div>
-                <button className="add-to-cart-btn">اضف الى السلة</button>
+                <button className="add-to-cart-btn">{t.addToCart}</button>
               </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* 5. قسم التخفيضات */}
-      <section id="discounts" className="products-section fade-in-section">
+      {/* 5. قسم الأجهزة (التخفيضات) */}
+      <section id="devices" className="products-section fade-in-section">
         <div className="section-header">
           <h2 className="section-title">{t.discounts}</h2>
           <button className="view-all-btn">{t.viewAll}</button>
@@ -128,15 +128,15 @@ export default function MainContent({ currentLang }) {
                   <span className="product-status"><span className="status-dot"></span> {prod.status}</span>
                   <span className="product-price">{prod.price}</span>
                 </div>
-                <button className="add-to-cart-btn">اضف الى السلة</button>
+                <button className="add-to-cart-btn">{t.addToCart}</button>
               </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* 6. المنتجات الرقمية */}
-      <section id="digital" className="products-section fade-in-section">
+      {/* 6. قسم الألعاب (المنتجات الرقمية) */}
+      <section id="consoles" className="products-section fade-in-section">
         <div className="section-header">
           <h2 className="section-title">{t.digitalProducts}</h2>
           <button className="view-all-btn">{t.viewAll}</button>
@@ -152,9 +152,55 @@ export default function MainContent({ currentLang }) {
                   <span className="product-status"><span className="status-dot"></span> متوفر فوري</span>
                   <span className="product-price">4500 دج</span>
                 </div>
-                <button className="add-to-cart-btn">اضف الى السلة</button>
+                <button className="add-to-cart-btn">{t.addToCart}</button>
               </div>
             </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 7. قسم جميع أقسام المتجر في الأسفل */}
+      <section id="all-categories" className="store-categories-section fade-in-section">
+        <h2 className="section-title">{t.allCategories}</h2>
+        <div className="store-categories-grid">
+          {[
+            { id: 1, image: "/categories/section1.png" },
+            { id: 2, image: "/categories/section2.png" },
+            { id: 3, image: "/categories/section3.png" },
+            { id: 4, image: "/categories/section4.png" },
+            { id: 5, image: "/categories/section5.png" },
+            { id: 6, image: "/categories/section6.png" },
+          ].map((item, index) => (
+            <div 
+              key={item.id} 
+              className="store-category-box" 
+              style={{ '--box-index': index }}
+            >
+              <img src={item.image} alt="Category" className="store-box-img" />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 8. قسم تابعونا (شبكات التواصل الاجتماعي) */}
+      <section className="social-section fade-in-section">
+        <h2 className="section-title">{t.followUs}</h2>
+        <div className="social-circles-grid">
+          {[
+            { id: 1, name: "Instagram", icon: "/instagram.png", link: "https://instagram.com" },
+            { id: 2, name: "TikTok", icon: "/tik-tok.png", link: "https://tiktok.com" },
+          ].map((social, index) => (
+            <a 
+              key={social.id} 
+              href={social.link} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="social-circle" 
+              style={{ '--social-index': index }}
+              title={social.name}
+            >
+              <img src={social.icon} alt={social.name} className="social-img" />
+            </a>
           ))}
         </div>
       </section>
