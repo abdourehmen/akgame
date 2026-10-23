@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { translations } from '../../locales/translations';
 import './MainContent.css';
 
-export default function MainContent({ currentLang }) {
+export default function MainContent({ currentLang, onAddToCart }) {
   const t = translations[currentLang]?.home || translations['ar'].home;
-  const navigate = useNavigate(); // تفعيل أداة الانتقال بين الصفحات
+  const navigate = useNavigate();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -27,14 +27,46 @@ export default function MainContent({ currentLang }) {
     };
   }, []);
 
-  const categories = [1, 2, 3, 4, 5, 6];
+  // مصفوفة الفئات العلوية مع الأسماء والصور
+  const categories = [
+    { 
+      id: 1, 
+      image: "/6photo(1).png", 
+      name: { ar: "أجهوة", en: "PS5 Games", fr: "Jeux PS5", es: "Juegos PS5" } 
+    },
+    { 
+      id: 2, 
+      image: "/6photo(2).png", 
+      name: { ar: "مجسمات", en: "Consoles", fr: "Consoles", es: "Consolas" } 
+    },
+    { 
+      id: 3, 
+      image: "/6photo(3).png", 
+      name: { ar: "اكسسوارات", en: "Xbox Games", fr: "Jeux Xbox", es: "Juegos Xbox" } 
+    },
+    { 
+      id: 4, 
+      image: "/6photo(4).png", 
+      name: { ar: "اجهزة مستعملة", en: "Digital Cards", fr: "Cartes Cadeaux", es: "Tarjetas Digitales" } 
+    },
+    { 
+      id: 5, 
+      image: "/6photo(5).png", 
+      name: { ar: "العاب الفديو", en: "Switch Games", fr: "Jeux Switch", es: "Juegos Switch" } 
+    },
+    { 
+      id: 6, 
+      image: "/6photo(6).png", 
+      name: { ar: "إشتراكات رقمية", en: "Accessories", fr: "Accessoires", es: "Accesorios" } 
+    },
+  ];
   
   const products = [
-    { id: 1, title: "HALLOWEEN: THE GAME | PS5", price: "3500 دج", badge: "جديد", status: "متوفر" },
-    { id: 2, title: "CYBERPUNK 2077 | PS5", price: "4200 دج", badge: "جديد", status: "متوفر" },
-    { id: 3, title: "SPIDER-MAN 2 | PS5", price: "5500 دج", badge: "تخفيض", status: "متوفر" },
-    { id: 4, title: "EA SPORTS FC 25 | PS5", price: "6000 دج", badge: "الأكثر مبيعا", status: "متوفر" },
-    { id: 5, title: "GOD OF WAR RAGNAROK | PS5", price: "5800 دج", badge: "مميز", status: "متوفر" },
+    { id: 1, title: "HALLOWEEN: THE GAME | PS5", price: 3500, badge: "جديد", status: "متوفر" },
+    { id: 2, title: "CYBERPUNK 2077 | PS5", price: 4200, badge: "جديد", status: "متوفر" },
+    { id: 3, title: "SPIDER-MAN 2 | PS5", price: 5500, badge: "تخفيض", status: "متوفر" },
+    { id: 4, title: "EA SPORTS FC 25 | PS5", price: 6000, badge: "الأكثر مبيعا", status: "متوفر" },
+    { id: 5, title: "GOD OF WAR RAGNAROK | PS5", price: 5800, badge: "مميز", status: "متوفر" },
   ];
 
   return (
@@ -47,22 +79,31 @@ export default function MainContent({ currentLang }) {
         />
       </div>
 
-      {/* 2. تصفح حسب الفئة */}
+      {/* 2. تصفح حسب الفئة (مع إضافة عنوان الفئة تحت كل دائرة) */}
       <section className="categories-section fade-in-section">
         <h2 className="section-title">{t.categoriesTitle}</h2>
         <div className="categories-grid">
           {categories.map((cat, index) => (
             <div 
-              key={index} 
-              className="category-circle" 
-              style={{ '--cat-index': index }}
-              onClick={() => navigate('/products')} // إضافة الانتقال هنا
+              key={cat.id} 
+              className="category-item"
+              onClick={() => navigate('/products')}
             >
+              <div 
+                className="category-circle" 
+                style={{ '--cat-index': index }}
+              >
+                <img src={cat.image} alt={cat.name[currentLang] || cat.name['ar']} className="category-img" />
+              </div>
+              <span className="category-name">
+                {cat.name[currentLang] || cat.name['ar']}
+              </span>
             </div>
           ))}
         </div>
       </section>
 
+      {/* 3. قسم وصل حديثاً */}
       <section id="new" className="products-section fade-in-section" style={{ scrollMarginTop: '100px' }}>
         <div className="section-header">
           <h2 className="section-title">{t.newProducts}</h2>
@@ -77,15 +118,21 @@ export default function MainContent({ currentLang }) {
                 <h3 className="product-title" title={prod.title}>{prod.title}</h3>
                 <div className="product-price-stock">
                   <span className="product-status"><span className="status-dot"></span> {prod.status}</span>
-                  <span className="product-price">{prod.price}</span>
+                  <span className="product-price">{prod.price} دج</span>
                 </div>
-                <button className="add-to-cart-btn">{t.addToCart}</button>
+                <button 
+                  className="add-to-cart-btn" 
+                  onClick={() => onAddToCart && onAddToCart(prod)}
+                >
+                  {t.addToCart}
+                </button>
               </div>
             </div>
           ))}
         </div>
       </section>
 
+      {/* 4. قسم الأكثر مبيعاً */}
       <section id="bestsellers" className="products-section fade-in-section" style={{ scrollMarginTop: '100px' }}>
         <div className="section-header">
           <h2 className="section-title">{t.bestSellers}</h2>
@@ -100,15 +147,21 @@ export default function MainContent({ currentLang }) {
                 <h3 className="product-title">{prod.title}</h3>
                 <div className="product-price-stock">
                   <span className="product-status"><span className="status-dot"></span> {prod.status}</span>
-                  <span className="product-price">{prod.price}</span>
+                  <span className="product-price">{prod.price} دج</span>
                 </div>
-                <button className="add-to-cart-btn">{t.addToCart}</button>
+                <button 
+                  className="add-to-cart-btn" 
+                  onClick={() => onAddToCart && onAddToCart(prod)}
+                >
+                  {t.addToCart}
+                </button>
               </div>
             </div>
           ))}
         </div>
       </section>
 
+      {/* 5. قسم التخفيضات */}
       <section id="discounts" className="products-section fade-in-section" style={{ scrollMarginTop: '100px' }}>
         <div className="section-header">
           <h2 className="section-title">{t.discounts}</h2>
@@ -123,15 +176,21 @@ export default function MainContent({ currentLang }) {
                 <h3 className="product-title">{prod.title}</h3>
                 <div className="product-price-stock">
                   <span className="product-status"><span className="status-dot"></span> {prod.status}</span>
-                  <span className="product-price">{prod.price}</span>
+                  <span className="product-price">{prod.price} دج</span>
                 </div>
-                <button className="add-to-cart-btn">{t.addToCart}</button>
+                <button 
+                  className="add-to-cart-btn" 
+                  onClick={() => onAddToCart && onAddToCart(prod)}
+                >
+                  {t.addToCart}
+                </button>
               </div>
             </div>
           ))}
         </div>
       </section>
 
+      {/* 6. قسم المنتجات الرقمية */}
       <section id="digital" className="products-section fade-in-section" style={{ scrollMarginTop: '100px' }}>
         <div className="section-header">
           <h2 className="section-title">{t.digitalProducts}</h2>
@@ -148,7 +207,12 @@ export default function MainContent({ currentLang }) {
                   <span className="product-status"><span className="status-dot"></span> متوفر فوري</span>
                   <span className="product-price">4500 دج</span>
                 </div>
-                <button className="add-to-cart-btn">{t.addToCart}</button>
+                <button 
+                  className="add-to-cart-btn" 
+                  onClick={() => onAddToCart && onAddToCart({ id: `digital-${prod.id}`, title: "بطاقة شحن 20$ | PSN", price: 4500 })}
+                >
+                  {t.addToCart}
+                </button>
               </div>
             </div>
           ))}
@@ -160,25 +224,26 @@ export default function MainContent({ currentLang }) {
         <h2 className="section-title">{t.allCategories}</h2>
         <div className="store-categories-grid">
           {[
-            { id: 1, image: "/categories/section1.png" },
-            { id: 2, image: "/categories/section2.png" },
-            { id: 3, image: "/categories/section3.png" },
-            { id: 4, image: "/categories/section4.png" },
-            { id: 5, image: "/categories/section5.png" },
-            { id: 6, image: "/categories/section6.png" },
+            { id: 1, image: "/a9sam(1).jpg" },
+            { id: 2, image: "/a9sam(2).jpg" },
+            { id: 3, image: "/a9sam(3).jpg" },
+            { id: 4, image: "/a9sam(4).jpg" },
+            { id: 5, image: "/a9sam(5).jpg" },
+            { id: 6, image: "/a9sam(6).jpg" },
           ].map((item, index) => (
             <div 
               key={item.id} 
               className="store-category-box" 
               style={{ '--box-index': index }}
-              onClick={() => navigate('/products')} // إضافة الانتقال هنا
+              onClick={() => navigate('/products')}
             >
-              <img src={item.image} alt="Category" className="store-box-img" />
+              <img src={item.image} alt={`Category ${item.id}`} className="store-box-img" />
             </div>
           ))}
         </div>
       </section>
 
+      {/* 8. قسم متابعتنا على وسائل التواصل */}
       <section className="social-section fade-in-section">
         <h2 className="section-title">{t.followUs}</h2>
         <div className="social-circles-grid">

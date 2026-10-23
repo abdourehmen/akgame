@@ -122,7 +122,7 @@
   justify-self: end;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #94a3b8;
+  color: #ffffff;
   padding: 7px 18px;
   border-radius: 20px;
   font-size: 13px;
@@ -264,7 +264,7 @@
   box-shadow: none;
 }
 
-/* الانيميشن */
+/* حركة التلاشي للظهور (Animation) */
 .products-section .product-card {
   opacity: 0;
   transform: translateY(35px);
@@ -289,7 +289,9 @@
   transform: scale(1) translateY(0);
 }
 
-/* جميع أقسام المتجر */
+/* ====================================================
+   جميع أقسام المتجر (مربعات الصور)
+   ==================================================== */
 .store-categories-section {
   width: 100%;
   max-width: 1300px;
@@ -302,26 +304,22 @@
 .store-categories-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
+  gap: 24px;
   width: 100%;
   justify-content: center;
 }
 
 .store-category-box {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 20px;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
+  padding: 0;
+  overflow: hidden; /* يضمن احتواء الصورة وعدم خروجها عن حواف المستطيل */
   position: relative;
-  transition: all 0.3s ease;
   cursor: pointer;
-  height: 170px;
+  height: 190px; /* ارتفاع متناسق مع عرض المستطيل */
   box-sizing: border-box;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
   opacity: 0;
   transform: translateY(35px);
   transition: opacity 0.6s ease-out, transform 0.6s ease-out, border-color 0.3s ease, box-shadow 0.3s ease;
@@ -334,12 +332,27 @@
 }
 
 .store-category-box:hover {
-  border-color: #0f172a;
+  border-color: #ffffff;
   transform: translateY(-6px);
   box-shadow: 0 15px 35px rgba(255, 255, 255, 0.15);
 }
 
-/* قسم تابعونا */
+/* ضبط الصورة داخل المستطيل */
+.store-box-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* لقص وتكييف الصورة بانسجام دون تمطيط */
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.store-category-box:hover .store-box-img {
+  transform: scale(1.04);
+}
+
+/* ====================================================
+   قسم تابعونا على مواقع التواصل 
+   ==================================================== */
 .social-section {
   width: 100%;
   max-width: 1300px;
@@ -404,11 +417,15 @@
    تجاوب الشاشات (Media Queries) 
    ==================================================== */
 
-/* الأجهزة اللوحية والهواتف الكبيرة */
+/* الأجهزة اللوحية والشاشات المتوسطة */
 @media (max-width: 992px) {
   .store-categories-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
+  }
+
+  .store-category-box {
+    height: 160px;
   }
   
   .social-circles-grid {
@@ -420,8 +437,34 @@
     height: 125px;
   }
 }
+/* عنصر الفئة الكلي (الدائرة + العنوان) */
+.category-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
 
-/* الهواتف المتوسطة والصغيرة */
+.category-item:hover {
+  transform: translateY(-4px);
+}
+
+/* عنوان الفئة تحت الدائرة */
+.category-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+  text-align: center;
+  transition: color 0.3s ease;
+  white-space: nowrap;
+}
+
+.category-item:hover .category-name {
+  color: #b6acac;
+}
+/* الهواتف الذكية */
 @media (max-width: 768px) {
   .store-main-container {
     padding: 30px 4%;
@@ -463,14 +506,6 @@
     min-height: 330px;
     padding: 12px;
   }
-  
-  .product-title {
-    font-size: 12px;
-  }
-  
-  .product-price, .product-status {
-    font-size: 12px;
-  }
 
   .store-categories-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -490,21 +525,26 @@
     height: 90px;
   }
 }
+
 /* الهواتف الصغيرة جداً */
 @media (max-width: 480px) {
   .categories-grid {
-    grid-template-columns: repeat(3, 1fr); /* 3 دوائر في الفئات العلوية */
+    grid-template-columns: repeat(3, 1fr);
     gap: 10px;
   }
 
   .products-grid {
-    grid-template-columns: repeat(2, 1fr); /* كرتين في كل صف للمنتجات */
-    gap: 8px; /* تقليل المسافة قليلاً لتناسب حجم الهاتف */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
   }
   
   .store-categories-grid {
-    grid-template-columns: repeat(2, 1fr); /* كرتين في كل صف لأقسام المتجر */
-    gap: 10px;
+    grid-template-columns: 1fr; /* عرض مستطيل واحد كبير بكل صف للهواتف الصغيرة */
+    gap: 12px;
+  }
+
+  .store-category-box {
+    height: 150px;
   }
   
   .social-circles-grid {
@@ -516,7 +556,6 @@
     height: 70px;
   }
 
-  /* تصغير الخطوط قليلاً داخل الكرت لتتناسب مع وجود كرتين في الهاتف */
   .product-card {
     padding: 10px;
     min-height: 280px;
@@ -526,11 +565,7 @@
     height: 110px;
   }
 
-  .product-title {
-    font-size: 11px;
-  }
-
-  .product-price, .product-status {
+  .product-title, .product-price, .product-status {
     font-size: 11px;
   }
 

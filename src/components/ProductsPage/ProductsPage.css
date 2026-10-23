@@ -391,6 +391,11 @@ input:checked + .toggle-slider {
 .filter-pill-btn.active .pill-icon {
   color: #3b82f6; /* تحويل الأيقونة للون الأزرق */
 }
+.page-num-btn.active {
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
+}
 /* التجاوب مع الشاشات الأصغر */
 @media (max-width: 992px) {
   .products-grid-4 {

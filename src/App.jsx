@@ -11,39 +11,55 @@ import CartDrawer from './components/CartDrawer/CartDrawer';
 export default function App() {
   const [currentLang, setCurrentLang] = useState('ar');
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [cartItems, setCartItems] = useState([]);
 
-  // قائمة منتجات تجريبية داخل السلة (مطابقة للصورة)
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      title: 'BATMAN: ARKHAM CITY | PS3 (NTSC-J)',
-      price: 9000,
-      quantity: 1,
-      image: '/logo.jpg'
-    }
-  ]);
+  // دالة إضافة المنتج إلى السلة وفتح السلة الجانبية تلقائياً
+  const handleAddToCart = (product) => {
+    setCartItems((prevItems) => {
+      const existingIndex = prevItems.findIndex((item) => item.id === product.id);
+      if (existingIndex > -1) {
+        const updated = [...prevItems];
+        updated[existingIndex].quantity += 1;
+        return updated;
+      }
+      return [
+        ...prevItems,
+        {
+          id: product.id,
+          title: product.title,
+          price: product.price,
+          quantity: 1,
+          image: product.image_url || product.image || '/logo.jpg'
+        }
+      ];
+    });
+    setIsCartOpen(true); // فتح لوحة السلة مباشرة عند إضافة منتج
+  };
 
-  // تحديث الكميات
+  // دالة تحديث الكمية داخل السلة
   const handleUpdateQuantity = (id, newQty) => {
     if (newQty <= 0) {
       handleRemoveItem(id);
     } else {
-      setCartItems(cartItems.map(item => item.id === id ? { ...item, quantity: newQty } : item));
+      setCartItems((prevItems) =>
+        prevItems.map((item) => (item.id === id ? { ...item, quantity: newQty } : item))
+      );
     }
   };
 
-  // حذف عنصر
+  // دالة حذف عنصر من السلة
   const handleRemoveItem = (id) => {
-    setCartItems(cartItems.filter(item => item.id !== id));
+    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
   };
 
+  // حساب إجمالي عدد القطع في السلة لشعار الهيدر
   const totalItemsCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <Router>
       <div className="app-container">
         
-        {/* شريط التنقل مع زر السلة */}
+        {/* شريط التنقل */}
         <Navbar 
           currentLang={currentLang} 
           setLang={setCurrentLang} 
@@ -56,17 +72,22 @@ export default function App() {
             <>
               <Hero currentLang={currentLang} />
               <FeaturesMarquee currentLang={currentLang} />
-              <MainContent currentLang={currentLang} />
+              <MainContent currentLang={currentLang} onAddToCart={handleAddToCart} />
             </>
           } />
           
-          <Route path="/products" element={<ProductsPage currentLang={currentLang} />} />
+          {/* مسار المنتجات مع تمرير دالة الإضافة */}
+          <Route 
+            path="/products" 
+            element={<ProductsPage currentLang={currentLang} onAddToCart={handleAddToCart} />} 
+          />
+          
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
         
         <Footer currentLang={currentLang} />
 
-        {/* مكون السلة الجانبي */}
+        {/* السلة الجانبية */}
         <CartDrawer 
           isOpen={isCartOpen}
           onClose={() => setIsCartOpen(false)}
