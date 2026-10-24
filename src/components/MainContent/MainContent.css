@@ -157,7 +157,7 @@
   position: relative;
   transition: all 0.3s ease;
   cursor: pointer;
-  height: 380px; /* زيادة طول الكرت لاستيعاب طول الصورة */
+  height: 380px;
   width: 100%;
   box-sizing: border-box;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
@@ -168,26 +168,27 @@
   transform: translateY(-6px);
   box-shadow: 0 15px 35px rgba(255, 255, 255, 0.15);
 }
+
 /* ================= تحسين مظهر الشارات بشكل عصري ================= */
 .product-badge {
   position: absolute;
   top: 10px;
   right: 10px;
   padding: 5px 13px;
-  border-radius: 20px; /* حواف دائرية أنيقة */
+  border-radius: 20px;
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.3px;
   z-index: 3;
-  backdrop-filter: blur(8px); /* تأثير الزجاج الضبابي خلف الشارة */
+  backdrop-filter: blur(8px);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .product-card:hover .product-badge {
-  transform: translateY(-2px) scale(1.04); /* تكبير سلس وتأثير تفاعلي عند تحريك الماوس */
+  transform: translateY(-2px) scale(1.04);
 }
 
-/* شارة التخفيض (أحمر عالي التباين وجذاب) */
+/* شارة التخفيض */
 .product-badge.sale-badge {
   background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   color: #ffffff;
@@ -195,7 +196,7 @@
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
 }
 
-/* شارة جديد (أسود فخم وعصري) */
+/* شارة جديد */
 .product-badge.new-badge {
   background: linear-gradient(135deg, #18181b 0%, #000000 100%);
   color: #ffffff;
@@ -210,7 +211,7 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 4px 10px rgba(15, 23, 42, 0.25);
 }
-/* ================= تحسين طريقة عرض السعر بشكل جذاب وفخم ================= */
+
 /* ================= عرض السعر بشكل جذاب وبدون خلفية مربع ================= */
 .product-price-row {
   display: flex;
@@ -225,13 +226,11 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  /* إلغاء خلفية المربع والحدود */
   background: transparent;
   padding: 0;
   border: none;
 }
 
-/* السعر الأساسي / الجديد */
 .product-price {
   font-size: 16px;
   font-weight: 900;
@@ -239,12 +238,10 @@
   letter-spacing: -0.3px;
 }
 
-/* السعر في حالة التخفيض */
 .product-price.discount {
-  color: #dc2626; /* لون أحمر بارز ليعطي انطباع بالعرض والتخفيض */
+  color: #dc2626;
 }
 
-/* السعر القديم المشطوب */
 .product-price.old {
   font-size: 12px;
   color: #94a3b8;
@@ -359,9 +356,10 @@
 }
 
 /* ====================================================
-   قسم تابعونا على مواقع التواصل 
+   قسم موقع المحل والخريطة الفاخرة (Location & Map Section)
    ==================================================== */
-.social-section {
+/* ================= تنسيق عنوان ونصوص قسم الموقع ================= */
+.store-location-section {
   width: 100%;
   max-width: 1300px;
   display: flex;
@@ -371,57 +369,118 @@
   margin-bottom: 20px;
 }
 
-.social-circles-grid {
-  display: flex;
-  justify-content: center;
-  gap: 320px;
-  width: 100%;
-  margin-top: 10px;
+.store-location-section .section-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 8px;
+  text-align: center;
 }
 
-.social-circle {
-  width: 180px;
-  height: 170px;
-  border-radius: 50%;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+.location-subtitle {
+  font-size: 14px;
+  color: #94a3b8;
+  margin: 0 0 25px 0;
+  text-align: center;
+  line-height: 1.6;
+}
+.location-container-card {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 30px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 28px;
+  padding: 30px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  box-sizing: border-box;
+}
+
+.location-info-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 22px;
+}
+
+.location-info-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 16px 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.location-icon-box {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  overflow: hidden;
-  cursor: pointer;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+.location-text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-label {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.info-value {
+  font-size: 14px;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.directions-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 24px;
+  background: #ffffff;
+  color: #000000;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 800;
   text-decoration: none;
-  opacity: 0;
-  transform: scale(0.7) translateY(20px);
-  transition: opacity 0.5s ease-out, transform 0.5s ease-out, border-color 0.3s ease, box-shadow 0.3s ease;
-  transition-delay: calc(var(--social-index) * 0.08s);
+  margin-top: 10px;
+  transition: all 0.3s ease;
 }
 
-.social-section.is-visible .social-circle {
-  opacity: 1;
-  transform: scale(1) translateY(0);
+.directions-btn:hover {
+  background: #e2e8f0;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2);
 }
 
-.social-circle:hover {
-  border-color: #0f172a;
-  transform: translateY(-6px) scale(1.05);
-  box-shadow: 0 15px 35px rgba(255, 255, 255, 0.2);
+.location-map-column {
+  width: 100%;
+  height: 380px;
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
-.social-img {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  border-radius: 50% !important;
+.google-map-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  filter: invert(90%) hue-rotate(180deg) contrast(110%); /* خلفية ليلية مظلمة متناسقة مع الموقع */
 }
 
-.social-circle:hover .social-img {
-  transform: scale(1.1);
-}
-
-/* عنصر الفئة الكلي (الدائرة + العنوان) */
+/* عنصر الفئة الكلي */
 .category-item {
   display: flex;
   flex-direction: column;
@@ -451,7 +510,76 @@
 /* ====================================================
    تجاوب الشاشات (Media Queries) 
    ==================================================== */
+/* ================= تنظيم أوقات العمل ================= */
+/* ================= قائمة أوقات العمل المفصلة ================= */
+.hours-item {
+  align-items: flex-start !important;
+}
 
+.all-hours-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+  width: 100%;
+}
+
+.single-day-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 6px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+.single-day-row .day-name {
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.single-day-row .day-time {
+  color: #ffffff;
+  font-weight: 700;
+  direction: ltr;
+}
+
+/* تمييز يوم الجمعة بلون خاص */
+.single-day-row.friday-row {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+.single-day-row.friday-row .day-name,
+.single-day-row.friday-row .day-time {
+  color: #fca5a5;
+}
+.hours-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.hour-badge {
+  display: inline-block;
+  font-size: 13px !important;
+  font-weight: 700;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 5px 12px;
+  border-radius: 10px;
+  width: fit-content;
+}
+
+.hour-badge.friday-badge {
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.08);
+}
 @media (max-width: 1200px) {
   .products-grid {
     grid-template-columns: repeat(4, 1fr);
@@ -471,14 +599,14 @@
   .store-category-box {
     height: 160px;
   }
-  
-  .social-circles-grid {
-    gap: 150px;
+
+  .location-container-card {
+    grid-template-columns: 1fr;
+    padding: 20px;
   }
-  
-  .social-circle {
-    width: 140px;
-    height: 125px;
+
+  .location-map-column {
+    height: 300px;
   }
 }
 
@@ -532,15 +660,6 @@
   .store-category-box {
     height: 140px;
   }
-  
-  .social-circles-grid {
-    gap: 40px;
-  }
-  
-  .social-circle {
-    width: 100px;
-    height: 90px;
-  }
 }
 
 @media (max-width: 480px) {
@@ -561,15 +680,6 @@
 
   .store-category-box {
     height: 150px;
-  }
-  
-  .social-circles-grid {
-    gap: 20px;
-  }
-  
-  .social-circle {
-    width: 80px;
-    height: 70px;
   }
 
   .product-card {

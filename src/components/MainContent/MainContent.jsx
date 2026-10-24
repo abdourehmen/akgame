@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { translations } from '../../locales/translations';
 import { supabase } from '../../supabaseClient';
+import { MapPin, Phone, Clock, Navigation } from 'lucide-react';
 import './MainContent.css';
 
 export default function MainContent({ currentLang, onAddToCart }) {
@@ -34,6 +35,87 @@ export default function MainContent({ currentLang, onAddToCart }) {
     fr: 'Figurines',
     es: 'Figuras'
   };
+// قاموس ترجمات قسم الموقع والمحل
+  const storeLocationTranslations = {
+    ar: {
+      title: 'موقع وتواجد المحل',
+      subtitle: 'تفضل بزيارتنا في متجرنا لمعاينة أحدث الأجهزة والمنتجات مباشرة',
+      addressTitle: 'العنوان',
+      addressDetail: 'الجزائر العاصمة، الجزائر',
+      phoneTitle: 'الهاتف والتواصل',
+      phoneDetail: '+213 550 00 00 00',
+      hoursTitle: 'أوقات العمل',
+      hoursList: [
+        { day: 'السبت', time: '11:00 ص - 09:00 م' },
+        { day: 'الأحد', time: '11:00 ص - 09:00 م' },
+        { day: 'الإثنين', time: '11:00 ص - 09:00 م' },
+        { day: 'الثلاثاء', time: '11:00 ص - 09:00 م' },
+        { day: 'الأربعاء', time: '11:00 ص - 09:00 م' },
+        { day: 'الخميس', time: '11:00 ص - 09:00 م' },
+        { day: 'الجمعة', time: '04:00 م - 09:00 م', isFriday: true }
+      ],
+      directionsBtn: 'احصل على الاتجاهات (GPS)'
+    },
+    en: {
+      title: 'Our Store Location',
+      subtitle: 'Visit us in-store to check out the latest consoles and gaming products',
+      addressTitle: 'Address',
+      addressDetail: 'Algiers, Algeria',
+      phoneTitle: 'Phone & Contact',
+      phoneDetail: '+213 550 00 00 00',
+      hoursTitle: 'Working Hours',
+      hoursList: [
+        { day: 'Saturday', time: '11:00 AM - 09:00 PM' },
+        { day: 'Sunday', time: '11:00 AM - 09:00 PM' },
+        { day: 'Monday', time: '11:00 AM - 09:00 PM' },
+        { day: 'Tuesday', time: '11:00 AM - 09:00 PM' },
+        { day: 'Wednesday', time: '11:00 AM - 09:00 PM' },
+        { day: 'Thursday', time: '11:00 AM - 09:00 PM' },
+        { day: 'Friday', time: '04:00 PM - 09:00 PM', isFriday: true }
+      ],
+      directionsBtn: 'Get Directions (GPS)'
+    },
+    fr: {
+      title: 'Emplacement du magasin',
+      subtitle: 'Rendez-nous visite pour découvrir nos nouvelles consoles et produits',
+      addressTitle: 'Adresse',
+      addressDetail: 'Alger, Algérie',
+      phoneTitle: 'Téléphone & Contact',
+      phoneDetail: '+213 550 00 00 00',
+      hoursTitle: 'Heures d\'ouverture',
+      hoursList: [
+        { day: 'Samedi', time: '11:00 - 21:00' },
+        { day: 'Dimanche', time: '11:00 - 21:00' },
+        { day: 'Lundi', time: '11:00 - 21:00' },
+        { day: 'Mardi', time: '11:00 - 21:00' },
+        { day: 'Mercredi', time: '11:00 - 21:00' },
+        { day: 'Jeudi', time: '11:00 - 21:00' },
+        { day: 'Vendredi', time: '16:00 - 21:00', isFriday: true }
+      ],
+      directionsBtn: 'Obtenir l\'itinéraire (GPS)'
+    },
+    es: {
+      title: 'Ubicación de la tienda',
+      subtitle: 'Visítenos en la tienda para ver las últimas consolas y productos',
+      addressTitle: 'Dirección',
+      addressDetail: 'Argel, Argelia',
+      phoneTitle: 'Teléfono y contacto',
+      phoneDetail: '+213 550 00 00 00',
+      hoursTitle: 'Horario de atención',
+      hoursList: [
+        { day: 'Sábado', time: '11:00 AM - 09:00 PM' },
+        { day: 'Domingo', time: '11:00 AM - 09:00 PM' },
+        { day: 'Lunes', time: '11:00 AM - 09:00 PM' },
+        { day: 'Martes', time: '11:00 AM - 09:00 PM' },
+        { day: 'Miércoles', time: '11:00 AM - 09:00 PM' },
+        { day: 'Jueves', time: '11:00 AM - 09:00 PM' },
+        { day: 'Viernes', time: '04:00 PM - 09:00 PM', isFriday: true }
+      ],
+      directionsBtn: 'Obtener indicaciones (GPS)'
+    }
+  };
+
+  const locT = storeLocationTranslations[currentLang] || storeLocationTranslations['ar'];
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -418,28 +500,77 @@ export default function MainContent({ currentLang, onAddToCart }) {
         </div>
       </section>
 
-      {/* 9. قسم وسائل التواصل */}
-      <section className="social-section fade-in-section">
-        <h2 className="section-title">{t.followUs}</h2>
-        <div className="social-circles-grid">
-          {[
-            { id: 1, name: "Instagram", icon: "/instagram.png", link: "https://instagram.com" },
-            { id: 2, name: "TikTok", icon: "/tik-tok.png", link: "https://tiktok.com" },
-          ].map((social, index) => (
+      {/* 9. قسم موقع وتواجد المحل الخريطة التفاعلية الفاخرة */}
+      <section className="store-location-section fade-in-section" id="location">
+        <h2 className="section-title">{locT.title}</h2>
+        <p className="location-subtitle">{locT.subtitle}</p>
+
+        <div className="location-container-card">
+          {/* كرت التفاصيل والمعلومات الجانبية */}
+          <div className="location-info-column">
+            
+            <div className="location-info-item">
+              <div className="location-icon-box">
+                <MapPin size={22} color="#ffffff" />
+              </div>
+              <div className="location-text-group">
+                <span className="info-label">{locT.addressTitle}</span>
+                <span className="info-value">{locT.addressDetail}</span>
+              </div>
+            </div>
+
+            <div className="location-info-item">
+              <div className="location-icon-box">
+                <Phone size={22} color="#ffffff" />
+              </div>
+              <div className="location-text-group">
+                <span className="info-label">{locT.phoneTitle}</span>
+                <span className="info-value">{locT.phoneDetail}</span>
+              </div>
+            </div>
+<div className="location-info-item hours-item">
+  <div className="location-icon-box">
+    <Clock size={22} color="#ffffff" />
+  </div>
+  <div className="location-text-group" style={{ width: '100%' }}>
+    <span className="info-label">{locT.hoursTitle}</span>
+    <div className="all-hours-list">
+      {locT.hoursList.map((item, idx) => (
+        <div key={idx} className={`single-day-row ${item.isFriday ? 'friday-row' : ''}`}>
+          <span className="day-name">{item.day}</span>
+          <span className="day-time">{item.time}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+</div>
+
             <a 
-              key={social.id} 
-              href={social.link} 
+              href="https://l.instagram.com/?u=https%3A%2F%2Fmaps.apple.com%2Fplace%3Fcoordinate%3D36.737352%252C3.102530%26name%3DRep%25C3%25A8re%2Bsur%2Ble%2Bplan%26span%3D0.011796%252C0.018454%26utm_source%3Dig%26utm_medium%3Dsocial%26utm_content%3Dlink_in_bio&e=AUCnFPSXtPWdbFePDg_vS-h0CaHj-sDWynJjgPYSTIxg0vEVqO1GQqdw2jD8lLvJ_pRiYy0LS4QpR2a1VB15umajFsSVP-SWhnvPFYszKw6BpBobzPk_IM0Cr6JACxpW6uCNFvo" 
               target="_blank" 
-              rel="noopener noreferrer"
-              className="social-circle" 
-              style={{ '--social-index': index }}
-              title={social.name}
+              rel="noopener noreferrer" 
+              className="directions-btn"
             >
-              <img src={social.icon} alt={social.name} className="social-img" />
+              <Navigation size={18} />
+              <span>{locT.directionsBtn}</span>
             </a>
-          ))}
+
+          </div>
+
+          {/* إطار الخريطة التفاعلية بتصميم ليلي فاخر */}
+          <div className="location-map-column">
+            <iframe
+              title="AKGAME Store Location Map"
+              className="google-map-iframe"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d102353.47352352843!2d3.00!3d36.75!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x128fb2f34789885b%3A0xc3f8e5d070b4a451!2sAlgiers!5e0!3m2!1sen!2sdz!4v1680000000000!5m2!1sen!2sdz"
+              allowFullScreen=""
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
         </div>
       </section>
+
     </main>
   );
 }
