@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, ShoppingBag, PackagePlus, Package, 
   ArrowLeft, Search, Trash2, Edit, Plus, Image as ImageIcon, Upload, X,
-  DollarSign, TrendingUp, RefreshCw, ArrowUpRight, ArrowDownRight 
+  DollarSign, TrendingUp, RefreshCw, ArrowUpRight, ArrowDownRight, CheckCircle2, AlertTriangle, AlertCircle
 } from 'lucide-react';
 import { supabase } from '../../supabaseClient';
 import './AdminDashboard.css';
@@ -16,28 +16,50 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // حالة الكرت المنبثق للإشعارات (Toast Notification)
-  const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+  // حالة النافذة المنبثقة للإشعارات والتنبيهات
+  const [modal, setModal] = useState({ show: false, message: '', title: '', type: 'success' });
+
+  // حالة نافذة تأكيد الحذف المخصصة (بديل window.confirm)
+  const [confirmModal, setConfirmModal] = useState({ show: false, title: '', message: '', onConfirm: null });
 
   // حالات نموذج إضافة منتج جديد
   const [newTitle, setNewTitle] = useState('');
   const [newPrice, setNewPrice] = useState('');
-  const [newDiscountPrice, setNewDiscountPrice] = useState(''); // السعر بعد التخفيض
-  const [newBadge, setNewBadge] = useState('');                 // الشارة اليدوية (الأكثر مبيعا، رقمي، مجسمات...)
+  const [newDiscountPrice, setNewDiscountPrice] = useState('');
+  const [newBadge, setNewBadge] = useState('');
   const [newCategory, setNewCategory] = useState('أجهزة');
   const [newDescription, setNewDescription] = useState('');
   
-  // الملفات المحملة والمعاينة (حتى 5 صور)
+  // الملفات المعاينة
   const [selectedFiles, setSelectedFiles] = useState([]); 
   const [previewUrls, setPreviewUrls] = useState([]);
   const [isSubmittingProduct, setIsSubmittingProduct] = useState(false);
 
-  // دالة إظهار كرت الإشعارات
-  const showNotification = (message, type = 'success') => {
-    setToast({ show: true, message, type });
-    setTimeout(() => {
-      setToast({ show: false, message: '', type: 'success' });
-    }, 3500);
+  // دالة إظهار النافذة المنبثقة الإشعارية
+  const showModal = (message, title = '', type = 'success') => {
+    setModal({
+      show: true,
+      message,
+      title: title || (type === 'success' ? 'تمت العملية بنجاح' : 'تنبيه'),
+      type
+    });
+  };
+
+  const closeModal = () => {
+    setModal({ ...modal, show: false });
+  };
+
+  // دالة إظهار نافذة التأكيد قبل الإجراءات الحساسة
+  const askConfirmation = (title, message, onConfirmAction) => {
+    setConfirmModal({
+      show: true,
+      title,
+      message,
+      onConfirm: async () => {
+        setConfirmModal({ show: false, title: '', message: '', onConfirm: null });
+        await onConfirmAction();
+      }
+    });
   };
 
   useEffect(() => {
@@ -60,48 +82,47 @@ export default function AdminDashboard() {
     const { error } = await supabase.from('orders').update({ status: newStatus }).eq('id', orderId);
     if (!error) {
       setOrders(orders.map(order => order.id === orderId ? { ...order, status: newStatus } : order));
-      showNotification('تم تحديث حالة الطلب بنجاح');
+      showModal('تم تحديث حالة الطلب بنجاح.', 'تحديث الطلب', 'success');
     }
   };
 
-  const handleDeleteOrder = async (orderId) => {
-    if (window.confirm('هل أنت تأكد من حذف هذا الطلب؟')) {
+  // معالجة حذف الطلب باستعمال نافذة التأكيد الاحترافية المخصصة
+  const handleDeleteOrder = (orderId) => {
+    askConfirmation('تأكيد حذف الطلب', 'هل أنت تأكد من رغبتك في حذف هذا الطلب نهائياً؟', async () => {
       const { error } = await supabase.from('orders').delete().eq('id', orderId);
       if (!error) {
         setOrders(orders.filter(order => order.id !== orderId));
-        showNotification('تم حذف الطلب بنجاح');
+        showModal('تم حذف الطلب المحدد بنجاح.', 'حذف الطلب', 'success');
       }
-    }
+    });
   };
 
-  const handleDeleteProduct = async (productId) => {
-    if (window.confirm('هل أنت تأكد من حذف هذا المنتج؟')) {
+  // معالجة حذف المنتج باستعمال نافذة التأكيد الاحترافية المخصصة
+  const handleDeleteProduct = (productId) => {
+    askConfirmation('تأكيد حذف المنتج', 'هل أنت تأكد من رغبتك في حذف هذا المنتج نهائياً من المتجر؟', async () => {
       const { error } = await supabase.from('products').delete().eq('id', productId);
       if (!error) {
         setProducts(products.filter(p => p.id !== productId));
-        showNotification('تم حذف المنتج بنجاح');
+        showModal('تم حذف المنتج بنجاح من القائمة.', 'حذف منتج', 'success');
       }
-    }
+    });
   };
 
-  // معالجة اختيار الصور من جهاز الكمبيوتر/الهاتف
   const handleFileSelect = (e) => {
     const files = Array.from(e.target.files);
     
     if (selectedFiles.length + files.length > 5) {
-      showNotification('يمكنك اختيار 5 صور كحد أقصى للمنتج.', 'error');
+      showModal('يمكنك اختيار 5 صور كحد أقصى للمنتج الواحد.', 'تنبيه الرفع', 'error');
       return;
     }
 
     const updatedFiles = [...selectedFiles, ...files];
     setSelectedFiles(updatedFiles);
 
-    // إنشاء روابط معاينة فورية
     const newPreviews = files.map(file => URL.createObjectURL(file));
     setPreviewUrls([...previewUrls, ...newPreviews]);
   };
 
-  // إزالة صورة من المعاينة قبل الرفع
   const handleRemoveImage = (index) => {
     const updatedFiles = selectedFiles.filter((_, i) => i !== index);
     const updatedPreviews = previewUrls.filter((_, i) => i !== index);
@@ -109,11 +130,10 @@ export default function AdminDashboard() {
     setPreviewUrls(updatedPreviews);
   };
 
-  // دالة إضافة المنتج ورفع الصور مباشرة إلى Supabase Storage
   const handleAddProduct = async (e) => {
     e.preventDefault();
     if (!newTitle || !newPrice) {
-      showNotification('يرجى كتابة اسم المنتج والسعر الأصلي.', 'error');
+      showModal('يرجى ملء كافة الحقول الأساسية (اسم المنتج والسعر الأصلي).', 'حقول ناقصة', 'error');
       return;
     }
 
@@ -122,7 +142,6 @@ export default function AdminDashboard() {
     try {
       const uploadedImageUrls = [];
 
-      // 1. رفع كل صورة إلى Supabase Storage
       for (let i = 0; i < selectedFiles.length; i++) {
         const file = selectedFiles[i];
         const fileExt = file.name.split('.').pop();
@@ -138,7 +157,6 @@ export default function AdminDashboard() {
           continue;
         }
 
-        // الحصول على الرابط العام للصورة المرفوعة
         const { data: publicUrlData } = supabase.storage
           .from('product-images')
           .getPublicUrl(filePath);
@@ -149,11 +167,8 @@ export default function AdminDashboard() {
       }
 
       const mainImg = uploadedImageUrls[0] || '/logo.jpg';
-
-      // 2. تحديد الشارة: إذا وُجد سعر تخفيض تكون الشارة "تخفيض"، وإلا تُستخدم الشارة اليدوية المختارة
       const finalBadge = newDiscountPrice ? 'تخفيض' : (newBadge || null);
 
-      // 3. إدخال بيانات المنتج في قاعدة البيانات
       const productPayload = {
         title: newTitle,
         price: Number(newPrice),
@@ -169,11 +184,10 @@ export default function AdminDashboard() {
 
       if (error) {
         console.error('Error adding product:', error.message);
-        showNotification('حدث خطأ أثناء حفظ المنتج في قاعدة البيانات.', 'error');
+        showModal('حدث خطأ أثناء حفظ المنتج في قاعدة البيانات.', 'خطأ في الحفظ', 'error');
       } else {
-        showNotification('تمت إضافة المنتج ورفع الصور بنجاح! 🎉', 'success');
+        showModal('تمت إضافة المنتج ورفع كافة الصور الخاصة به بنجاح!', 'تم بنجاح 🎉', 'success');
         
-        // تفريغ الحقول
         setNewTitle('');
         setNewPrice('');
         setNewDiscountPrice('');
@@ -186,7 +200,7 @@ export default function AdminDashboard() {
       }
     } catch (err) {
       console.error(err);
-      showNotification('حدث خطأ غير متوقع.', 'error');
+      showModal('حدث خطأ غير متوقع أثناء معالجة الطلب.', 'خطأ غير متوقع', 'error');
     } finally {
       setIsSubmittingProduct(false);
     }
@@ -225,7 +239,7 @@ export default function AdminDashboard() {
   return (
     <div className="admin-layout" dir="rtl">
       
-      {/* ================= 1. الشريط الجانبي (Sidebar) ================= */}
+      {/* Sidebar */}
       <aside className="admin-sidebar">
         <div className="sidebar-header">
           <h2 className="admin-brand">AKGAME <span>ADMIN</span></h2>
@@ -274,10 +288,10 @@ export default function AdminDashboard() {
         </div>
       </aside>
 
-      {/* ================= 2. منطقة المحتوى (Main Content) ================= */}
+      {/* Main Content */}
       <main className="admin-content">
         
-        {/* 1. قسم الإحصائيات (Overview) */}
+        {/* overview tab */}
         {activeTab === 'overview' && (
           <div className="tab-content">
             <h1 className="content-title">نظرة عامة على المتجر</h1>
@@ -387,7 +401,7 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* 2. قسم إدارة الطلبات (Orders) */}
+        {/* orders tab */}
         {activeTab === 'orders' && (
           <div className="tab-content">
             <div className="content-header-row">
@@ -463,7 +477,7 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* 3. قسم إدارة المنتجات (Products) */}
+        {/* products tab */}
         {activeTab === 'products' && (
           <div className="tab-content">
             <div className="content-header-row">
@@ -510,7 +524,7 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* 4. قسم إضافة منتج جديد (Add Product) */}
+        {/* add-product tab */}
         {activeTab === 'add-product' && (
           <div className="tab-content">
             <h1 className="content-title">إضافة منتج جديد</h1>
@@ -530,7 +544,6 @@ export default function AdminDashboard() {
                 />
               </div>
 
-              {/* السعر الأصلي والسعر بعد التخفيض */}
               <div className="form-grid-2" style={{ marginTop: '16px' }}>
                 <div className="form-group">
                   <label>السعر الأصلي (دج) *</label>
@@ -556,7 +569,6 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* اختيار الفئة والشارة اليدوية */}
               <div className="form-grid-2" style={{ marginTop: '16px' }}>
                 <div className="form-group">
                   <label>الفئة / القسم *</label>
@@ -601,7 +613,6 @@ export default function AdminDashboard() {
                 />
               </div>
 
-              {/* قسم رفع الملفات بأسلوب Dropzone */}
               <div className="images-upload-section">
                 <h3 className="section-sub-title">
                   <ImageIcon size={18} />
@@ -626,7 +637,6 @@ export default function AdminDashboard() {
                   </div>
                 )}
 
-                {/* شبكة معاينة الصور المختارة */}
                 {previewUrls.length > 0 && (
                   <div className="selected-previews-grid">
                     {previewUrls.map((url, index) => (
@@ -646,7 +656,6 @@ export default function AdminDashboard() {
                 )}
               </div>
 
-              {/* زر الحفظ */}
               <button 
                 type="submit" 
                 className="save-product-btn"
@@ -662,16 +671,56 @@ export default function AdminDashboard() {
 
       </main>
 
-      {/* كرت الإشعارات المنبثق الأنيق (Toast Notification) */}
-      {toast.show && (
-        <div className={`custom-toast-card ${toast.type}`}>
-          <div className="toast-icon">
-            {toast.type === 'success' ? '✨' : '⚠️'}
+      {/* 1. النافذة المنبثقة للإشعارات والتنبيهات العامة */}
+      {modal.show && (
+        <div className="center-modal-overlay" onClick={closeModal}>
+          <div className={`center-modal-card ${modal.type}`} onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close-icon" onClick={closeModal}>
+              <X size={18} />
+            </button>
+
+            <div className="modal-icon-badge">
+              {modal.type === 'success' ? (
+                <CheckCircle2 size={36} color="#22c55e" />
+              ) : (
+                <AlertTriangle size={36} color="#ef4444" />
+              )}
+            </div>
+
+            <h3 className="modal-title">{modal.title}</h3>
+            <p className="modal-message">{modal.message}</p>
+
+            <button className="modal-confirm-btn" onClick={closeModal}>
+              موافق
+            </button>
           </div>
-          <div className="toast-message">{toast.message}</div>
-          <button className="toast-close-btn" onClick={() => setToast({ ...toast, show: false })}>
-            <X size={16} />
-          </button>
+        </div>
+      )}
+
+      {/* 2. نافذة التأكيد قبل الحذف احترافية وبشكل مرتب في منتصف الشاشة */}
+      {confirmModal.show && (
+        <div className="center-modal-overlay" onClick={() => setConfirmModal({ ...confirmModal, show: false })}>
+          <div className="center-modal-card confirm-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close-icon" onClick={() => setConfirmModal({ ...confirmModal, show: false })}>
+              <X size={18} />
+            </button>
+
+            <div className="modal-icon-badge danger">
+              <AlertCircle size={38} color="#ef4444" />
+            </div>
+
+            <h3 className="modal-title">{confirmModal.title}</h3>
+            <p className="modal-message">{confirmModal.message}</p>
+
+            <div className="modal-actions-row">
+              <button className="modal-btn cancel-btn" onClick={() => setConfirmModal({ ...confirmModal, show: false })}>
+                إلغاء
+              </button>
+              <button className="modal-btn delete-confirm-btn" onClick={confirmModal.onConfirm}>
+                تأكيد الحذف
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

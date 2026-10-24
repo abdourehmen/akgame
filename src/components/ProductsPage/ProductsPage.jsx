@@ -24,10 +24,6 @@ export default function ProductsPage({ currentLang, onAddToCart }) {
       price: 'السعر (دج)',
       categoriesTitle: 'الأقسام',
       addToCart: 'اضف الى السلة',
-      inStock: 'متوفر',
-      outOfStock: 'غير متوفر',
-      newBadge: 'جديد',
-      discountBadge: 'تخفيض',
       loading: 'جاري تحميل المنتجات...',
       noProducts: 'لا توجد منتجات مطابقة للفلاتر المحددة'
     },
@@ -44,10 +40,6 @@ export default function ProductsPage({ currentLang, onAddToCart }) {
       price: 'Price (DZD)',
       categoriesTitle: 'Categories',
       addToCart: 'Add to Cart',
-      inStock: 'In Stock',
-      outOfStock: 'Out of Stock',
-      newBadge: 'New',
-      discountBadge: 'Sale',
       loading: 'Loading products...',
       noProducts: 'No products found matching filters'
     },
@@ -64,10 +56,6 @@ export default function ProductsPage({ currentLang, onAddToCart }) {
       price: 'Prix (DZD)',
       categoriesTitle: 'Catégories',
       addToCart: 'Ajouter au panier',
-      inStock: 'En Stock',
-      outOfStock: 'Rupture de stock',
-      newBadge: 'Nouveau',
-      discountBadge: 'Promo',
       loading: 'Chargement des produits...',
       noProducts: 'Aucun produit trouvé'
     },
@@ -84,10 +72,6 @@ export default function ProductsPage({ currentLang, onAddToCart }) {
       price: 'Precio (DZD)',
       categoriesTitle: 'Categorías',
       addToCart: 'Añadir al carrito',
-      inStock: 'En Stock',
-      outOfStock: 'Agotado',
-      newBadge: 'Nuevo',
-      discountBadge: 'Oferta',
       loading: 'Cargando productos...',
       noProducts: 'No se encontraron productos'
     }
@@ -98,17 +82,26 @@ export default function ProductsPage({ currentLang, onAddToCart }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // حالات التحديد الديناميكي (قراءة القسم الممرر افتراضياً)
+  // حالات التحديد الديناميكي
   const [selectedPlatform, setSelectedPlatform] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(location.state?.category || '');
 
-  // حالات التوفر (مستقبلة القيم الافتراضية من location.state)
+  // حالات التوفر
   const [inStockOnly, setInStockOnly] = useState(false);
   const [offersOnly, setOffersOnly] = useState(location.state?.offersOnly || false);
   const [newlyArrived, setNewlyArrived] = useState(location.state?.newlyArrived || false);
   const [bestSellersOnly, setBestSellersOnly] = useState(location.state?.bestSellersOnly || false);
 
-  // تحديث حالة الفلاتر إذا تغيرت الحالة الممررة عبر التوجيه
+  // قاموس ترجمات الشارات لتتوافق وتترجم ديناميكياً مع الصفحة الرئيسية
+  const badgeTranslations = {
+    'تخفيض': { ar: 'تخفيض', en: 'Sale', fr: 'Promo', es: 'Oferta' },
+    'Sale': { ar: 'تخفيض', en: 'Sale', fr: 'Promo', es: 'Oferta' },
+    'جديد': { ar: 'جديد', en: 'New', fr: 'Nouveau', es: 'Nuevo' },
+    'New': { ar: 'جديد', en: 'New', fr: 'Nouveau', es: 'Nuevo' },
+    'الأكثر مبيعا': { ar: 'الأكثر مبيعة', en: 'Best Seller', fr: 'Meilleure vente', es: 'Más vendido' },
+    'Best Seller': { ar: 'الأكثر مبيعة', en: 'Best Seller', fr: 'Meilleure vente', es: 'Más vendido' }
+  };
+
   useEffect(() => {
     if (location.state?.offersOnly !== undefined) {
       setOffersOnly(location.state.offersOnly);
@@ -124,15 +117,11 @@ export default function ProductsPage({ currentLang, onAddToCart }) {
     }
   }, [location.state]);
 
-  // حالة الترتيب حسب السعر
   const [sortBy, setSortBy] = useState('newest');
-
-  // متغيرات شريط السعر
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(50000);
   const maxLimit = 100000;
 
-  // ترقيم الصفحات
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
@@ -143,7 +132,6 @@ export default function ProductsPage({ currentLang, onAddToCart }) {
 
   const platforms = ['الكل', 'PS5', 'Xbox Series', 'PS4', 'Switch', 'Switch 2'];
   
-  // قائمة الأقسام
   const categoriesList = [
     { key: 'الكل', ar: 'الكل', en: 'All', fr: 'Tous', es: 'Todos' },
     { key: 'إكسسوارات', ar: 'إكسسوارات', en: 'Accessories', fr: 'Accessoires', es: 'Accesorios' },
@@ -154,54 +142,44 @@ export default function ProductsPage({ currentLang, onAddToCart }) {
     { key: 'مجسمات', ar: 'مجسمات', en: 'Figures', fr: 'Figurines', es: 'Figuras' },
   ];
 
-  // جلب البيانات مع ربط كافّة الفلاتر بـ Supabase
   useEffect(() => {
     async function fetchProducts() {
       setLoading(true);
       try {
         let query = supabase.from('products').select('*');
 
-        // 1. فلترة المنصة العامة
         if (selectedPlatform && selectedPlatform !== 'الكل') {
           query = query.eq('platform', selectedPlatform);
         }
 
-        // 2. فلترة قسم المنتجات
         if (selectedCategory && selectedCategory !== 'الكل') {
           query = query.eq('category', selectedCategory);
         }
 
-        // 3. فلتر المتوفر فقط
         if (inStockOnly) {
           query = query.eq('in_stock', true);
         }
 
-        // 4. فلتر العروض فقط: تشمل المنتجات التي تحتوي على سعر تخفيض أو شارة تخفيض
         if (offersOnly) {
           query = query.or('discount_price.gt.0,badge.eq.تخفيض,badge.eq.Sale,badge.eq.Promo,badge.eq.Oferta');
         }
 
-        // 5. فلتر وصل حديثاً (آخر 30 يوماً)
         if (newlyArrived) {
           const thirtyDaysAgo = new Date();
           thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
           query = query.gte('created_at', thirtyDaysAgo.toISOString());
         }
 
-        // 6. فلتر الأكثر مبيعاً
         if (bestSellersOnly) {
           query = query.or('badge.eq.الأكثر مبيعا,badge.eq.Best Seller,badge.eq.Meilleures ventes,badge.eq.Más vendidos');
         }
 
-        // 7. فلتر كلمة البحث الممررة من الصفحة الرئيسية
         if (location.state?.searchQuery) {
           query = query.ilike('title', `%${location.state.searchQuery}%`);
         }
 
-        // 8. فلتر نطاق السعر
         query = query.gte('price', minPrice).lte('price', maxPrice);
 
-        // 9. الترتيب حسب الخيار المختار
         if (sortBy === 'price_asc') {
           query = query.order('price', { ascending: true });
         } else if (sortBy === 'price_desc') {
@@ -227,6 +205,24 @@ export default function ProductsPage({ currentLang, onAddToCart }) {
 
     fetchProducts();
   }, [selectedPlatform, selectedCategory, inStockOnly, offersOnly, newlyArrived, bestSellersOnly, minPrice, maxPrice, sortBy, location.state?.searchQuery]);
+
+  // دالة تحديد كلاس الشارة
+  const getBadgeClass = (badgeText) => {
+    if (!badgeText) return 'sale-badge';
+    if (['تخفيض', 'Sale', 'Promo', 'Oferta'].includes(badgeText)) return 'sale-badge';
+    if (['جديد', 'New'].includes(badgeText)) return 'new-badge';
+    return 'default-badge';
+  };
+
+  // دالة ترجمة الشارة
+  const translateBadge = (rawBadge) => {
+    if (!rawBadge) return '';
+    const translatedObj = badgeTranslations[rawBadge];
+    if (translatedObj) {
+      return translatedObj[currentLang] || translatedObj['ar'] || rawBadge;
+    }
+    return rawBadge;
+  };
 
   return (
     <div className="products-page-container" dir={isRtl ? 'rtl' : 'ltr'}>
@@ -255,7 +251,7 @@ export default function ProductsPage({ currentLang, onAddToCart }) {
 
         <div className="filter-box-body">
           
-          {/* العمود الأول: المنصة */}
+          {/* المنصة */}
           <div className="filter-col">
             <h3 className="filter-col-title">{t.platform}</h3>
             <div className="filter-grid platform-grid">
@@ -273,11 +269,10 @@ export default function ProductsPage({ currentLang, onAddToCart }) {
             </div>
           </div>
 
-          {/* العمود الثاني: التوفر */}
+          {/* التوفر */}
           <div className="filter-col">
             <h3 className="filter-col-title">{t.availability}</h3>
             <div className="toggle-group">
-              
               <label className="toggle-item">
                 <span className="toggle-label">{t.inStockOnly}</span>
                 <div className="toggle-switch">
@@ -325,11 +320,10 @@ export default function ProductsPage({ currentLang, onAddToCart }) {
                   <span className="toggle-slider"></span>
                 </div>
               </label>
-
             </div>
           </div>
 
-          {/* العمود الثالث: السعر */}
+          {/* السعر */}
           <div className="filter-col price-col">
             <h3 className="filter-col-title">{t.price}</h3>
             <div className="price-slider-wrapper">
@@ -369,7 +363,7 @@ export default function ProductsPage({ currentLang, onAddToCart }) {
             </div>
           </div>
 
-          {/* العمود الرابع: الأقسام */}
+          {/* الأقسام */}
           <div className="filter-col">
             <h3 className="filter-col-title" style={{ width: '100%', textAlign: isRtl ? 'right' : 'left' }}>
               {t.categoriesTitle}
@@ -393,7 +387,7 @@ export default function ProductsPage({ currentLang, onAddToCart }) {
         </div>
       </div>
 
-      {/* شبكة المنتجات */}
+      {/* شبكة المنتجات بتصميم مطابق تماماً للصفحة الرئيسية */}
       <div className="products-grid-4">
         {loading ? (
           <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: '#94a3b8' }}>
@@ -404,54 +398,58 @@ export default function ProductsPage({ currentLang, onAddToCart }) {
             {t.noProducts}
           </div>
         ) : (
-          currentProducts.map((prod) => (
-            <div 
-              key={prod.id} 
-              className="product-card"
-              onClick={() => navigate(`/product/${prod.id}`)}
-              style={{ cursor: 'pointer' }}
-            >
-              {(prod.badge || prod.discount_price) && (
-                <span className="product-badge">{prod.badge || 'تخفيض'}</span>
-              )}
-              <div className="product-image-container">
-                {prod.image_url ? (
-                  <img src={prod.image_url} alt={prod.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                ) : (
-                  <span>photo</span>
-                )}
-              </div>
-              <div className="product-info">
-                <h3 className="product-title" title={prod.title}>{prod.title}</h3>
-                <div className="product-price-stock">
-                  <span className="product-status">
-                    <span className="status-dot"></span> {prod.in_stock !== false ? t.inStock : t.outOfStock}
+          currentProducts.map((prod, idx) => {
+            const rawBadge = prod.badge || (prod.discount_price ? 'تخفيض' : null);
+            const displayedBadge = translateBadge(rawBadge);
+
+            return (
+              <div 
+                key={prod.id} 
+                className="product-card"
+                onClick={() => navigate(`/product/${prod.id}`)}
+                style={{ cursor: 'pointer', '--card-index': idx }}
+              >
+                {rawBadge && (
+                  <span className={`product-badge ${getBadgeClass(rawBadge)}`}>
+                    {displayedBadge}
                   </span>
-                  
-                  {/* عرض السعر المخفض وبجانبه السعر القديم */}
-                  <div className="product-price-box">
-                    {prod.discount_price ? (
-                      <>
-                        <span className="product-price discount">{prod.discount_price} DZD</span>
-                        <span className="product-price old" style={{ textDecoration: 'line-through', fontSize: '12px', color: '#94a3b8', marginStart: '6px' }}>{prod.price} DZD</span>
-                      </>
-                    ) : (
-                      <span className="product-price">{prod.price} DZD</span>
-                    )}
-                  </div>
+                )}
+                <div className="product-image-container">
+                  {prod.image_url ? (
+                    <img src={prod.image_url} alt={prod.title} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px' }} />
+                  ) : (
+                    <span>photo</span>
+                  )}
                 </div>
-                <button 
-                  className="add-to-cart-btn" 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onAddToCart && onAddToCart(prod);
-                  }}
-                >
-                  {t.addToCart}
-                </button>
+                <div className="product-info">
+                  <h3 className="product-title" title={prod.title}>{prod.title}</h3>
+                  
+                  <div className="product-price-row">
+                    <div className="product-price-box">
+                      {prod.discount_price ? (
+                        <>
+                          <span className="product-price discount">{prod.discount_price} DZD</span>
+                          <span className="product-price old">{prod.price} DZD</span>
+                        </>
+                      ) : (
+                        <span className="product-price">{prod.price} DZD</span>
+                      )}
+                    </div>
+                  </div>
+
+                  <button 
+                    className="add-to-cart-btn" 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onAddToCart && onAddToCart(prod);
+                    }}
+                  >
+                    {t.addToCart}
+                  </button>
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
 

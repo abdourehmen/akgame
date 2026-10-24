@@ -15,20 +15,20 @@
   color: #ffffff;
   text-align: center;
 }
-/* صندوق الفلترة - الشكل الأبيض النظيف */
+
+/* صندوق الفلترة */
 .advanced-filter-box {
   width: 100%;
   max-width: 1300px;
-  background: #ffffff; /* خلفية بيضاء */
-  border: 1px solid #e2e8f0; /* إطار رمادي فاتح */
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 16px;
   margin-bottom: 50px;
   overflow: hidden;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); /* ظل ناعم */
-  color: #0f172a; /* لون نص داكن */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  color: #0f172a;
 }
 
-/* هيدر الفلترة */
 .filter-box-header {
   display: flex;
   justify-content: space-between;
@@ -61,7 +61,6 @@
   background: #e2e8f0;
 }
 
-/* جسم الفلترة والأعمدة */
 .filter-box-body {
   display: flex;
   width: 100%;
@@ -71,13 +70,12 @@
 .filter-col {
   flex: 1;
   padding: 0 20px;
-  border-left: 1px solid #e2e8f0; /* خط فاصل رمادي فاتح */
+  border-left: 1px solid #e2e8f0;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-/* ترتيب الأعمدة للغة العربية (RTL) */
 [dir="rtl"] .filter-col:last-child {
   border-left: none;
 }
@@ -94,10 +92,9 @@
   font-weight: 700;
   margin-top: 0;
   margin-bottom: 25px;
-  color: #0f172a; /* لون عناوين الأعمدة أسود */
+  color: #0f172a;
 }
 
-/* ترتيب الأزرار ليكون مرناً */
 .filter-grid {
   display: flex;
   flex-wrap: wrap;
@@ -107,7 +104,6 @@
   width: 100%;
 }
 
-/* تنسيق أزرار الفلترة الفاتحة */
 .filter-item-btn {
   background: #ffffff;
   border: 1px solid #cbd5e1;
@@ -121,7 +117,6 @@
   width: auto;
 }
 
-/* عند تمرير الماوس، يتحول الزر للون الأسود الفخم */
 .filter-item-btn:hover,
 .filter-item-btn.active {
   border-color: #0a0a0c;
@@ -129,7 +124,7 @@
   background: #0a0a0c;
 }
 
-/* شبكة المنتجات (4 في كل صف) */
+/* شبكة المنتجات */
 .products-grid-4 {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -137,6 +132,162 @@
   width: 100%;
   max-width: 1300px;
   margin-bottom: 50px;
+}
+
+/* ====================================================
+   تصميم الكرت المطابق للصفحة الرئيسية
+   ==================================================== */
+.product-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  height: 380px;
+  width: 100%;
+  box-sizing: border-box;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.product-card:hover {
+  border-color: #0f172a;
+  transform: translateY(-6px);
+  box-shadow: 0 15px 35px rgba(255, 255, 255, 0.15);
+}
+
+/* تحسين مظهر الشارات بشكل عصري */
+.product-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 5px 13px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  z-index: 3;
+  backdrop-filter: blur(8px);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.product-card:hover .product-badge {
+  transform: translateY(-2px) scale(1.04);
+}
+
+.product-badge.sale-badge {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
+}
+
+.product-badge.new-badge {
+  background: linear-gradient(135deg, #18181b 0%, #000000 100%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.product-badge.default-badge {
+  background: #0f172a;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.25);
+}
+
+.product-image-container {
+  width: 100%;
+  height: 190px;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  font-size: 16px;
+  font-weight: 500;
+  margin-top: 5px;
+  overflow: hidden;
+}
+
+.product-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.product-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.product-price-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 6px 0;
+}
+
+.product-price-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: transparent;
+  padding: 0;
+  border: none;
+}
+
+.product-price {
+  font-size: 16px;
+  font-weight: 900;
+  color: #0f172a;
+  letter-spacing: -0.3px;
+}
+
+.product-price.discount {
+  color: #dc2626;
+}
+
+.product-price.old {
+  font-size: 12px;
+  color: #94a3b8;
+  text-decoration: line-through;
+  font-weight: 600;
+}
+
+.add-to-cart-btn {
+  width: 100%;
+  padding: 10px;
+  background: #0f172a;
+  border: 1px solid #0f172a;
+  border-radius: 14px;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.add-to-cart-btn:hover {
+  background: transparent;
+  color: #0f172a;
+  border-color: #0f172a;
+  box-shadow: none;
 }
 
 /* ترقيم الصفحات */
@@ -167,12 +318,13 @@
   color: #0a0a0c;
 }
 
-.page-dots {
-  color: #94a3b8;
-  letter-spacing: 2px;
-  font-weight: bold;
+.page-num-btn.active {
+  background: #ffffff;
+  color: #0a0a0c;
+  border-color: #ffffff;
 }
-/* شريط السعر الديناميكي المزدوج */
+
+/* شريط السعر */
 .price-slider-wrapper {
   width: 100%;
   max-width: 250px;
@@ -202,7 +354,7 @@
   position: absolute;
   width: 100%;
   height: 6px;
-  background-color: #e2e8f0; /* خلفية الشريط رمادية */
+  background-color: #e2e8f0;
   border-radius: 3px;
   z-index: 1;
 }
@@ -210,12 +362,11 @@
 .slider-range {
   position: absolute;
   height: 6px;
-  background-color: #0f172a; /* الجزء المحدد أسود داكن */
+  background-color: #0f172a;
   border-radius: 3px;
   z-index: 2;
 }
 
-/* تصميم مقابض السحب (Thumbs) لتبدو شفافة وفوق الشريط مباشرة */
 .thumb {
   position: absolute;
   -webkit-appearance: none;
@@ -230,7 +381,6 @@
   margin: 0;
 }
 
-/* تصميم الدائرة البيضاء التي يسحبها المستخدم */
 .thumb::-webkit-slider-thumb {
   -webkit-appearance: none;
   pointer-events: all;
@@ -253,7 +403,8 @@
   border-radius: 50%;
   cursor: pointer;
 }
-/* تنسيقات قسم التوفر (أزرار التبديل) */
+
+/* التوفر */
 .toggle-group {
   display: flex;
   flex-direction: column;
@@ -275,7 +426,6 @@
   color: #475569;
 }
 
-/* صندوق زر التبديل */
 .toggle-switch {
   position: relative;
   display: inline-block;
@@ -284,14 +434,12 @@
   flex-shrink: 0;
 }
 
-/* إخفاء صندوق الاختيار الافتراضي */
 .toggle-switch input {
   opacity: 0;
   width: 0;
   height: 0;
 }
 
-/* تصميم مسار الزر (الخلفية) */
 .toggle-slider {
   position: absolute;
   cursor: pointer;
@@ -300,12 +448,10 @@
   right: 0;
   bottom: 0;
   background-color: #d8dce8;
-  /* إضافة تأثير حركة ناعم جداً للخلفية */
   transition: background-color 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
   border-radius: 20px;
 }
 
-/* تصميم الدائرة البيضاء */
 .toggle-slider:before {
   position: absolute;
   content: "";
@@ -315,15 +461,9 @@
   background-color: white;
   border-radius: 50%;
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-  /* حركة انزلاق ناعمة للدائرة */
   transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-/* -------------------------------------------
-   إصلاح الحركة والتموضع حسب اللغة
-------------------------------------------- */
-
-/* في اللغة العربية (RTL): الدائرة تبدأ من اليمين وتنزلق لليسار */
 [dir="rtl"] .toggle-slider:before {
   right: 2px;
 }
@@ -331,7 +471,6 @@
   transform: translateX(-16px);
 }
 
-/* في اللغات الأجنبية (LTR): الدائرة تبدأ من اليسار وتنزلق لليمين */
 [dir="ltr"] .toggle-slider:before {
   left: 2px;
 }
@@ -339,29 +478,28 @@
   transform: translateX(16px);
 }
 
-/* تغيير لون الخلفية عند التفعيل */
 input:checked + .toggle-slider {
   background-color: #0f172a;
 }
-/* تنسيق شبكة المنصات (أزرار الكبسولة) */
+
+/* الأقسام */
 .filter-pills-grid {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   width: 100%;
-  justify-content: flex-start; /* يبدأ من اليمين في العربية ومن اليسار في الإنجليزية */
+  justify-content: flex-start;
 }
 
-/* تصميم الزر (الكبسولة) */
 .filter-pill-btn {
   display: flex;
   align-items: center;
   gap: 8px;
   background: #ffffff;
-  border: 1px solid #cbd5e1; /* إطار رمادي فاتح */
-  color: #475569; /* لون النص */
+  border: 1px solid #cbd5e1;
+  color: #475569;
   padding: 6px 16px;
-  border-radius: 30px; /* جعل الحواف دائرية بالكامل */
+  border-radius: 30px;
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
@@ -373,30 +511,22 @@ input:checked + .toggle-slider {
   background: #f8fafc;
 }
 
-/* لون الأيقونة الافتراضي (داكن) */
 .pill-icon {
   color: #0f172a; 
   transition: color 0.3s ease;
 }
 
-/* -------------------------------------------
-   الحالة النشطة (Active) - اللون الأزرق
-------------------------------------------- */
 .filter-pill-btn.active {
-  border-color: #3b82f6; /* إطار أزرق */
-  color: #3b82f6; /* نص أزرق */
+  border-color: #3b82f6;
+  color: #3b82f6;
   background: #ffffff;
 }
 
 .filter-pill-btn.active .pill-icon {
-  color: #3b82f6; /* تحويل الأيقونة للون الأزرق */
+  color: #3b82f6;
 }
-.page-num-btn.active {
-  background: #0f172a;
-  color: #ffffff;
-  border-color: #0f172a;
-}
-/* التجاوب مع الشاشات الأصغر */
+
+/* التجاوب مع الشاشات */
 @media (max-width: 992px) {
   .products-grid-4 {
     grid-template-columns: repeat(3, 1fr);
@@ -411,7 +541,8 @@ input:checked + .toggle-slider {
   .filter-col {
     border-left: none !important;
     border-right: none !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+    padding: 15px 20px;
   }
 
   .filter-col:last-child {
@@ -421,11 +552,35 @@ input:checked + .toggle-slider {
   .products-grid-4 {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  .product-card {
+    height: auto;
+    min-height: 330px;
+    padding: 12px;
+  }
 }
 
 @media (max-width: 480px) {
   .products-grid-4 {
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
+  }
+
+  .product-card {
+    padding: 10px;
+    min-height: 290px;
+  }
+
+  .product-image-container {
+    height: 130px;
+  }
+
+  .product-title, .product-price {
+    font-size: 11px;
+  }
+
+  .add-to-cart-btn {
+    padding: 8px;
+    font-size: 11px;
   }
 }

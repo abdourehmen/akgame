@@ -35,7 +35,7 @@ export default function CartDrawer({ isOpen, onClose, cartItems, onUpdateQuantit
       shippingNote: 'Frais de livraison calculés à l\'étape suivante',
       checkout: 'Commander',
       viewCart: 'Voir le panier',
-      emptyCart: 'Votre panier est vide',
+      emptyCart: 'Votre panier me vide',
       currency: 'DZD'
     },
     es: {
@@ -51,20 +51,26 @@ export default function CartDrawer({ isOpen, onClose, cartItems, onUpdateQuantit
 
   const t = cartTranslations[currentLang] || cartTranslations['ar'];
 
-  // حساب المجموع الإجمالي
+  // دالة للحصول على السعر الفعلي (سعر التخفيض إذا وُجد)
+  const getItemPrice = (item) => {
+    if (item.discount_price && Number(item.discount_price) > 0) {
+      return Number(item.discount_price);
+    }
+    return Number(item.price || 0);
+  };
+
+  // حساب المجموع الإجمالي بالسعر الصحيح
   const calculateSubtotal = () => {
-    return cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    return cartItems.reduce((sum, item) => sum + (getItemPrice(item) * item.quantity), 0);
   };
 
   const totalItemsCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
-  // دالة التوجيه إلى صفحة إتمام الطلب مباشرة
   const handleGoToCheckout = () => {
     onClose();
     navigate('/checkout');
   };
 
-  // دالة التوجيه إلى صفحة عرض السلة
   const handleGoToCartPage = () => {
     onClose();
     navigate('/cart');
@@ -93,49 +99,53 @@ export default function CartDrawer({ isOpen, onClose, cartItems, onUpdateQuantit
         {/* قائمة المنتجات في السلة */}
         <div className="cart-drawer-body">
           {cartItems.length > 0 ? (
-            cartItems.map((item) => (
-              <div key={item.id} className="cart-item-card">
-                
-                {/* زر الحذف */}
-                <button className="remove-item-btn" onClick={() => onRemoveItem(item.id)}>
-                  <X size={16} />
-                </button>
+            cartItems.map((item) => {
+              const itemPrice = getItemPrice(item);
 
-                {/* صورة المنتج */}
-                <div className="cart-item-img-wrapper">
-                  <img src={item.image || '/logo.jpg'} alt={item.title} className="cart-item-img" />
-                </div>
-
-                {/* تفاصيل المنتج والتحكم بالكمية */}
-                <div className="cart-item-details">
-                  <h4 className="cart-item-title">{item.title}</h4>
+              return (
+                <div key={item.id} className="cart-item-card">
                   
-                  <div className="cart-item-bottom">
-                    <span className="cart-item-price">
-                      {item.price * item.quantity} {t.currency}
-                    </span>
+                  {/* زر الحذف */}
+                  <button className="remove-item-btn" onClick={() => onRemoveItem(item.id)}>
+                    <X size={16} />
+                  </button>
 
-                    {/* عداد الكمية */}
-                    <div className="quantity-controls">
-                      <button 
-                        className="qty-btn" 
-                        onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
-                      >
-                        <Plus size={14} />
-                      </button>
-                      <span className="qty-number">{item.quantity}</span>
-                      <button 
-                        className="qty-btn" 
-                        onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
-                      >
-                        <Minus size={14} />
-                      </button>
+                  {/* صورة المنتج */}
+                  <div className="cart-item-img-wrapper">
+                    <img src={item.image_url || item.image || '/logo.jpg'} alt={item.title} className="cart-item-img" />
+                  </div>
+
+                  {/* تفاصيل المنتج والتحكم بالكمية */}
+                  <div className="cart-item-details">
+                    <h4 className="cart-item-title">{item.title}</h4>
+                    
+                    <div className="cart-item-bottom">
+                      <span className="cart-item-price">
+                        {itemPrice * item.quantity} {t.currency}
+                      </span>
+
+                      {/* عداد الكمية */}
+                      <div className="quantity-controls">
+                        <button 
+                          className="qty-btn" 
+                          onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
+                        >
+                          <Plus size={14} />
+                        </button>
+                        <span className="qty-number">{item.quantity}</span>
+                        <button 
+                          className="qty-btn" 
+                          onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
+                        >
+                          <Minus size={14} />
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-              </div>
-            ))
+                </div>
+              );
+            })
           ) : (
             <div className="empty-cart-message">
               <ShoppingCart size={48} />
@@ -144,7 +154,7 @@ export default function CartDrawer({ isOpen, onClose, cartItems, onUpdateQuantit
           )}
         </div>
 
-        {/* فوتر السلة المجموع والأزرار */}
+        {/* فوتر السلة */}
         {cartItems.length > 0 && (
           <div className="cart-drawer-footer">
             <div className="cart-subtotal-row">
@@ -157,13 +167,11 @@ export default function CartDrawer({ isOpen, onClose, cartItems, onUpdateQuantit
               <Truck size={18} />
             </div>
 
-            {/* زر إتمام الطلب ينقل إلى صفحة الشراء /checkout */}
             <button className="checkout-btn" onClick={handleGoToCheckout}>
               <span>{t.checkout}</span>
               {isRtl ? <ArrowLeft size={18} /> : <ArrowRight size={18} />}
             </button>
 
-            {/* زر عرض السلة ينقل إلى صفحة السلة /cart */}
             <button className="view-cart-btn" onClick={handleGoToCartPage}>
               {t.viewCart}
             </button>

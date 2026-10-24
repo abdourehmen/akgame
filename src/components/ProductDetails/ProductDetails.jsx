@@ -125,6 +125,23 @@ export default function ProductDetails({ currentLang, onAddToCart }) {
     }
   };
 
+  // دالة الشراء والإضافة إلى السلة بالسعر الصحيح (سعر التخفيض إذا وجد)
+  const handleAddToCart = (item, qty = 1) => {
+    const finalPrice = (item.discount_price && Number(item.discount_price) > 0)
+      ? item.discount_price
+      : item.price;
+
+    const itemToAdd = {
+      ...item,
+      price: finalPrice, // اعتماد السعر المخفض في السلة
+      quantity: qty
+    };
+
+    if (onAddToCart) {
+      onAddToCart(itemToAdd);
+    }
+  };
+
   if (loading) {
     return (
       <div className="product-details-container loading-state">
@@ -144,6 +161,9 @@ export default function ProductDetails({ currentLang, onAddToCart }) {
     );
   }
 
+  // معرفة هل المنتج يحتوي على تخفيض أم لا
+  const hasDiscount = product.discount_price && Number(product.discount_price) > 0;
+
   return (
     <div className="product-details-container" dir={isRtl ? 'rtl' : 'ltr'}>
       
@@ -154,7 +174,22 @@ export default function ProductDetails({ currentLang, onAddToCart }) {
         <div className="product-info-box">
           <span className="product-category-tag">{product.category || 'jeux retro'}</span>
           <h1 className="product-main-title">{product.title}</h1>
-          <div className="product-price-tag">{product.price} DZD</div>
+
+          {/* عرض السعر بناءً على وجود تخفيض أم لا */}
+          <div className="product-price-tag" style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            {hasDiscount ? (
+              <>
+                <span style={{ color: '#dc2626', fontWeight: '800' }}>
+                  {product.discount_price} DZD
+                </span>
+                <span style={{ fontSize: '18px', color: '#94a3b8', textDecoration: 'line-through', fontWeight: '500' }}>
+                  {product.price} DZD
+                </span>
+              </>
+            ) : (
+              <span>{product.price} DZD</span>
+            )}
+          </div>
 
           <p className="product-short-desc">
             {product.description || 'BATMAN: ARKHAM CITY | PS3 (NTSC-J) Donnez une dimension supérieure à votre collection PlayStation 3 avec Batman: Arkham City en édition originale japonaise.'}
@@ -171,10 +206,10 @@ export default function ProductDetails({ currentLang, onAddToCart }) {
             </button>
           </div>
 
-          {/* زر إضافة للسلة */}
+          {/* زر إضافة للسلة بالسعر المخفض */}
           <button 
             className="main-add-to-cart-btn"
-            onClick={() => onAddToCart && onAddToCart({ ...product, quantity })}
+            onClick={() => handleAddToCart(product, quantity)}
           >
             {t.addToCart}
           </button>
@@ -239,36 +274,46 @@ export default function ProductDetails({ currentLang, onAddToCart }) {
 
         <div className="related-products-grid">
           {relatedProducts.length > 0 ? (
-            relatedProducts.map((relProd) => (
-              <div key={relProd.id} className="product-card" onClick={() => navigate(`/product/${relProd.id}`)}>
-                {relProd.badge && <span className="product-badge">{relProd.badge}</span>}
-                <div className="product-image-container">
-                  {relProd.image_url ? (
-                    <img src={relProd.image_url} alt={relProd.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  ) : (
-                    <span>photo</span>
-                  )}
-                </div>
-                <div className="product-info">
-                  <h3 className="product-title">{relProd.title}</h3>
-                  <div className="product-price-stock">
-                    <span className="product-status">
-                      <span className="status-dot"></span> {relProd.in_stock !== false ? (isRtl ? 'متوفر' : 'In Stock') : (isRtl ? 'غير متوفر' : 'Out of Stock')}
-                    </span>
-                    <span className="product-price">{relProd.price} DZD</span>
+            relatedProducts.map((relProd) => {
+              const relHasDiscount = relProd.discount_price && Number(relProd.discount_price) > 0;
+
+              return (
+                <div key={relProd.id} className="product-card" onClick={() => navigate(`/product/${relProd.id}`)}>
+                  {relProd.badge && <span className="product-badge">{relProd.badge}</span>}
+                  <div className="product-image-container">
+                    {relProd.image_url ? (
+                      <img src={relProd.image_url} alt={relProd.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      <span>photo</span>
+                    )}
                   </div>
-                  <button 
-                    className="add-to-cart-btn"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onAddToCart && onAddToCart(relProd);
-                    }}
-                  >
-                    {t.addToCart}
-                  </button>
+                  <div className="product-info">
+                    <h3 className="product-title">{relProd.title}</h3>
+                    <div className="product-price-stock" style={{ justifyContent: 'center' }}>
+                      <span className="product-price" style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                        {relHasDiscount ? (
+                          <>
+                            <span style={{ color: '#dc2626', fontWeight: '800' }}>{relProd.discount_price} DZD</span>
+                            <span style={{ fontSize: '11px', color: '#94a3b8', textDecoration: 'line-through' }}>{relProd.price} DZD</span>
+                          </>
+                        ) : (
+                          <span>{relProd.price} DZD</span>
+                        )}
+                      </span>
+                    </div>
+                    <button 
+                      className="add-to-cart-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleAddToCart(relProd, 1);
+                      }}
+                    >
+                      {t.addToCart}
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           ) : (
             <p style={{ gridColumn: '1 / -1', textAlign: 'center', color: '#94a3b8' }}>
               {t.noRelated}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Check } from 'lucide-react';
+import { Check, CheckCircle2, AlertCircle, X } from 'lucide-react';
 import { supabase } from '../../supabaseClient';
 import './CheckoutPage.css';
 
@@ -16,6 +16,10 @@ export default function CheckoutPage({ currentLang, cartItems, onClearCart }) {
   const [notes, setNotes] = useState('');
   const [agreedTerms, setAgreedTerms] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // حالات التحكم بالنافذة المنبثقة في منتصف الشاشة
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const wilayas = [
     '01 - أدرار', '02 - الشلف', '03 - الأغواط', '04 - أم البواقي', '05 - باتنة',
@@ -54,8 +58,10 @@ export default function CheckoutPage({ currentLang, cartItems, onClearCart }) {
       notesPlaceholder: 'معلومات إضافية حول طلبك (اختياري)',
       currency: 'دج',
       fillRequired: 'يرجى ملء جميع الحقول المطلوبة والموافقة على الشروط.',
-      orderSuccess: 'تم إرسال طلبك بنجاح! سنتصل بك قريباً لتأكيد التوصيل.',
-      orderError: 'حدث خطأ أثناء إرسال الطلب، يرجى المحاولة مرة أخرى.'
+      orderSuccessTitle: 'تم إرسال طلبك بنجاح!',
+      orderSuccessMsg: 'تم ارسال طلبك سيتم الاتصال بك في اقرب وقت',
+      orderError: 'حدث خطأ أثناء إرسال الطلب، يرجى المحاولة مرة أخرى.',
+      closeBtn: 'حسناً'
     },
     en: {
       title: 'Order Confirmation',
@@ -80,8 +86,10 @@ export default function CheckoutPage({ currentLang, cartItems, onClearCart }) {
       notesPlaceholder: 'Additional information about your order (optional)',
       currency: 'DZD',
       fillRequired: 'Please fill in all required fields and accept the terms.',
-      orderSuccess: 'Your order has been submitted successfully! We will contact you soon.',
-      orderError: 'An error occurred while placing the order. Please try again.'
+      orderSuccessTitle: 'Order Submitted!',
+      orderSuccessMsg: 'Your order has been sent. We will contact you as soon as possible.',
+      orderError: 'An error occurred while placing the order. Please try again.',
+      closeBtn: 'OK'
     },
     fr: {
       title: 'Confirmation de la commande',
@@ -106,8 +114,10 @@ export default function CheckoutPage({ currentLang, cartItems, onClearCart }) {
       notesPlaceholder: 'Notes concernant votre commande (optionnel)',
       currency: 'DZD',
       fillRequired: 'Veuillez remplir tous les champs obligatoires et accepter les conditions.',
-      orderSuccess: 'Votre commande a été envoyée avec succès! Nous vous contacterons bientôt.',
-      orderError: 'Une erreur s\'est produite. Veuillez réessayer.'
+      orderSuccessTitle: 'Commande envoyée !',
+      orderSuccessMsg: 'Votre commande a été envoyée. Nous vous contacterons dans les plus brefs délais.',
+      orderError: 'Une erreur s\'est produite. Veuillez réessayer.',
+      closeBtn: 'D\'accord'
     },
     es: {
       title: 'Confirmación del Pedido',
@@ -132,8 +142,10 @@ export default function CheckoutPage({ currentLang, cartItems, onClearCart }) {
       notesPlaceholder: 'Notas sobre su pedido (opcional)',
       currency: 'DZD',
       fillRequired: 'Por favor complete todos los campos requeridos y acepte los términos.',
-      orderSuccess: '¡Su pedido ha sido enviado con éxito! Nos pondremos en contacto pronto.',
-      orderError: 'Ocurrió un error. Por favor inténtelo de nuevo.'
+      orderSuccessTitle: '¡Pedido enviado!',
+      orderSuccessMsg: 'Su pedido ha sido enviado. Nos pondremos en contacto con usted lo antes posible.',
+      orderError: 'Ocurrió un error. Por favor inténtelo de nuevo.',
+      closeBtn: 'Aceptar'
     }
   };
 
@@ -144,16 +156,16 @@ export default function CheckoutPage({ currentLang, cartItems, onClearCart }) {
   const shippingFee = wilaya ? 500 : 0;
   const totalPrice = subtotalPrice + shippingFee;
 
-  // إرسال البيانات للـ Backend (Supabase)
   const handleConfirmOrder = async (e) => {
     e.preventDefault();
 
     if (!firstName || !lastName || !phone || !wilaya || !agreedTerms) {
-      alert(t.fillRequired);
+      setErrorMessage(t.fillRequired);
       return;
     }
 
     setIsSubmitting(true);
+    setErrorMessage('');
 
     try {
       const orderPayload = {
@@ -177,23 +189,38 @@ export default function CheckoutPage({ currentLang, cartItems, onClearCart }) {
 
       if (error) {
         console.error('Supabase error:', error.message);
-        alert(t.orderError);
+        setErrorMessage(t.orderError);
       } else {
-        alert(t.orderSuccess);
+        setShowSuccessModal(true);
         if (onClearCart) onClearCart();
-        navigate('/');
       }
     } catch (err) {
       console.error('Unexpected Error:', err);
-      alert(t.orderError);
+      setErrorMessage(t.orderError);
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const handleCloseSuccessModal = () => {
+    setShowSuccessModal(false);
+    navigate('/');
+  };
+
   return (
     <div className="checkout-page-container" dir={isRtl ? 'rtl' : 'ltr'}>
       <h1 className="checkout-page-title">{t.title}</h1>
+
+      {/* رسالة الخطأ أو التحذير في حال نقص البيانات */}
+      {errorMessage && (
+        <div className="checkout-error-banner">
+          <AlertCircle size={18} />
+          <span>{errorMessage}</span>
+          <button type="button" onClick={() => setErrorMessage('')} className="error-close-btn">
+            <X size={16} />
+          </button>
+        </div>
+      )}
 
       <form onSubmit={handleConfirmOrder} className="checkout-form-wrapper">
         
@@ -367,6 +394,27 @@ export default function CheckoutPage({ currentLang, cartItems, onClearCart }) {
         </div>
 
       </form>
+
+      {/* الكرت المنبثق في منتصف الشاشة (Center Success Modal) */}
+      {showSuccessModal && (
+        <div className="center-modal-overlay">
+          <div className="center-modal-card">
+            
+            <div className="modal-icon-badge success">
+              <CheckCircle2 size={36} color="#22c55e" />
+            </div>
+
+            <h2 className="modal-title">{t.orderSuccessTitle}</h2>
+            <p className="modal-message">{t.orderSuccessMsg}</p>
+
+            <button className="modal-confirm-btn" onClick={handleCloseSuccessModal}>
+              {t.closeBtn}
+            </button>
+
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

@@ -15,6 +15,18 @@ export default function MainContent({ currentLang, onAddToCart }) {
   // حالة كلمة البحث
   const [searchQuery, setSearchQuery] = useState('');
 
+  // قاموس ترجمات الشارات (Badge Translations)
+  const badgeTranslations = {
+    'تخفيض': { ar: 'تخفيض', en: 'Sale', fr: 'Promo', es: 'Oferta' },
+    'Sale': { ar: 'تخفيض', en: 'Sale', fr: 'Promo', es: 'Oferta' },
+    'جديد': { ar: 'جديد', en: 'New', fr: 'Nouveau', es: 'Nuevo' },
+    'New': { ar: 'جديد', en: 'New', fr: 'Nouveau', es: 'Nuevo' },
+    'الأكثر مبيعا': { ar: 'الأكثر مبيعة', en: 'Best Seller', fr: 'Meilleure vente', es: 'Más vendido' },
+    'Best Seller': { ar: 'الأكثر مبيعة', en: 'Best Seller', fr: 'Meilleure vente', es: 'Más vendido' },
+    'رقمي': { ar: 'رقمي', en: 'Digital', fr: 'Numérique', es: 'Digital' },
+    'مجسمات': { ar: 'مجسمات', en: 'Figures', fr: 'Figurines', es: 'Figuras' }
+  };
+
   // قاموس ترجمات عنوان قسم المجسمات
   const figuresTitles = {
     ar: 'المجسمات',
@@ -89,7 +101,7 @@ export default function MainContent({ currentLang, onAddToCart }) {
     { id: 6, image: "/6photo(6).png", key: "بطاقات رقمية", name: { ar: "بطاقات رقمية", en: "Digital Cards", fr: "Cartes Cadeaux", es: "Tarjetas Digitales" } },
   ];
 
-  // تصفية قسم وصل حديثاً تلقائياً: المنتجات المضافة حديثاً (خلال آخر 30 يوماً أو أول 5 أحدث منتجات مضافة)
+  // تصفية قسم وصل حديثاً
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
@@ -113,58 +125,88 @@ export default function MainContent({ currentLang, onAddToCart }) {
   const digitalProducts = filteredProducts.filter(p => p.category === 'digital' || p.badge === 'رقمي' || p.category === 'بطاقات رقمية').slice(0, 5);
   const figuresProducts = filteredProducts.filter(p => p.category === 'مجسمات' || p.category === 'figures' || p.badge === 'مجسمات').slice(0, 5);
 
-  const renderProductCard = (prod, index, isDirectVisible = false) => (
-    <div 
-      key={prod.id} 
-      className="product-card" 
-      onClick={() => navigate(`/product/${prod.id}`)}
-      style={{ 
-        cursor: 'pointer',
-        '--card-index': index,
-        ...(isDirectVisible ? { opacity: 1, transform: 'none', visibility: 'visible' } : {})
-      }}
-    >
-      {(prod.badge || prod.discount_price) && (
-        <span className="product-badge">{prod.badge || 'تخفيض'}</span>
-      )}
-      <div className="product-image-container">
-        {prod.image_url ? (
-          <img src={prod.image_url} alt={prod.title} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px' }} />
-        ) : (
-          <span>photo</span>
-        )}
-      </div>
-      <div className="product-info">
-        <h3 className="product-title" title={prod.title}>{prod.title}</h3>
-        <div className="product-price-stock">
-          <span className="product-status">
-            <span className="status-dot"></span> 
-            {prod.in_stock !== false ? (isRtl ? 'متوفر' : 'In Stock') : (isRtl ? 'غير متوفر' : 'Out of Stock')}
+  // دالة تحديد كلاس الشارة بناءً على نوعها
+  const getBadgeClass = (badgeText) => {
+    if (!badgeText) return 'sale-badge';
+    if (['تخفيض', 'Sale', 'Promo', 'Oferta'].includes(badgeText)) return 'sale-badge';
+    if (['جديد', 'New'].includes(badgeText)) return 'new-badge';
+    return 'default-badge';
+  };
+
+  // دالة ترجمة النص الخاص بالشارة حسب اللغة الحالية
+  const translateBadge = (rawBadge) => {
+    if (!rawBadge) return '';
+    const translatedObj = badgeTranslations[rawBadge];
+    if (translatedObj) {
+      return translatedObj[currentLang] || translatedObj['ar'] || rawBadge;
+    }
+    return rawBadge;
+  };
+
+  const renderProductCard = (prod, index, isDirectVisible = false) => {
+    const rawBadge = prod.badge || (prod.discount_price ? 'تخفيض' : null);
+    const displayedBadge = translateBadge(rawBadge);
+
+    return (
+      <div 
+        key={prod.id} 
+        className="product-card" 
+        onClick={() => navigate(`/product/${prod.id}`)}
+        style={{ 
+          cursor: 'pointer',
+          '--card-index': index,
+          ...(isDirectVisible ? { opacity: 1, transform: 'none', visibility: 'visible' } : {})
+        }}
+      >
+        {rawBadge && (
+          <span className={`product-badge ${getBadgeClass(rawBadge)}`}>
+            {displayedBadge}
           </span>
-          
-          <div className="product-price-box">
-            {prod.discount_price ? (
-              <>
-                <span className="product-price discount">{prod.discount_price} DZD</span>
-                <span className="product-price old">{prod.price} DZD</span>
-              </>
-            ) : (
-              <span className="product-price">{prod.price} DZD</span>
-            )}
-          </div>
+        )}
+        <div className="product-image-container">
+          {prod.image_url ? (
+            <img src={prod.image_url} alt={prod.title} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px' }} />
+          ) : (
+            <span>photo</span>
+          )}
         </div>
-        <button 
-          className="add-to-cart-btn" 
-          onClick={(e) => {
-            e.stopPropagation();
-            onAddToCart && onAddToCart(prod);
-          }}
-        >
-          {t.addToCart}
-        </button>
+        <div className="product-info">
+          <h3 className="product-title" title={prod.title}>{prod.title}</h3>
+          
+          <div className="product-price-row">
+            <div className="product-price-box">
+              {prod.discount_price ? (
+                <>
+                  <span className="product-price discount">{prod.discount_price} DZD</span>
+                  <span className="product-price old">{prod.price} DZD</span>
+                </>
+              ) : (
+                <span className="product-price">{prod.price} DZD</span>
+              )}
+            </div>
+          </div>
+
+          <button 
+            className="add-to-cart-btn" 
+            onClick={(e) => {
+              e.stopPropagation();
+              // التأكد من تحديد السعر النهائي المخفض قبل الإرسال للسلة
+              const effectivePrice = (prod.discount_price && Number(prod.discount_price) > 0)
+                ? prod.discount_price
+                : prod.price;
+
+              onAddToCart && onAddToCart({
+                ...prod,
+                price: effectivePrice
+              });
+            }}
+          >
+            {t.addToCart}
+          </button>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <main className="store-main-container">
