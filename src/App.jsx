@@ -11,23 +11,32 @@ import CartPage from './components/CartPage/CartPage';
 import CheckoutPage from './components/CheckoutPage/CheckoutPage';
 import AdminDashboard from './components/AdminDashboard/AdminDashboard';
 import CartDrawer from './components/CartDrawer/CartDrawer';
+import WhatsAppButton from './components/WhatsAppButton/WhatsAppButton';
+import LoginPage from './components/LoginPage/LoginPage'; // استيراد صفحة الدخول
 
-// مكون الفرعي للتحكم بإظهار الـ Navbar والـ Footer
 function AppContent() {
   const location = useLocation();
   const [currentLang, setCurrentLang] = useState('ar');
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
 
-  // التحقق مما إذا كنا في مسار الآدمن
+  // حالة التحقق من تسجيل دخول الآدمن
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(
+    () => sessionStorage.getItem('isAdminAuthenticated') === 'true'
+  );
+
   const isAdminRoute = location.pathname.startsWith('/admin');
 
-  // دالة إضافة المنتج إلى السلة وفتح السلة الجانبية تلقائياً
   const handleAddToCart = (product) => {
+    const effectivePrice = (product.discount_price && Number(product.discount_price) > 0)
+      ? Number(product.discount_price)
+      : Number(product.price);
+
     setCartItems((prevItems) => {
       const existingIndex = prevItems.findIndex((item) => item.id === product.id);
       if (existingIndex > -1) {
         const updated = [...prevItems];
+        updated[existingIndex].price = effectivePrice;
         updated[existingIndex].quantity += (product.quantity || 1);
         return updated;
       }
@@ -36,7 +45,8 @@ function AppContent() {
         {
           id: product.id,
           title: product.title,
-          price: product.price,
+          price: effectivePrice,
+          discount_price: product.discount_price,
           quantity: product.quantity || 1,
           image: product.image_url || product.image || '/logo.jpg'
         }
@@ -63,12 +73,16 @@ function AppContent() {
     setCartItems([]);
   };
 
+  const handleLogoutAdmin = () => {
+    sessionStorage.removeItem('isAdminAuthenticated');
+    setIsAdminAuthenticated(false);
+  };
+
   const totalItemsCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <div className="app-container">
       
-      {/* عرض الـ Navbar فقط إذا لم نكن في صفحة الآدمن */}
       {!isAdminRoute && (
         <Navbar 
           currentLang={currentLang} 
@@ -120,16 +134,21 @@ function AppContent() {
           } 
         />
 
-        {/* مسار لوحة تحكم الآدمن */}
+        {/* حماية مسار لوحة التحكم بنفس حماية الجلسة */}
         <Route 
           path="/admin" 
-          element={<AdminDashboard />} 
+          element={
+            isAdminAuthenticated ? (
+              <AdminDashboard onLogout={handleLogoutAdmin} />
+            ) : (
+              <LoginPage onLoginSuccess={() => setIsAdminAuthenticated(true)} />
+            )
+          } 
         />
         
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
       
-      {/* عرض الـ Footer والسلة الجانبية فقط إذا لم نكن في صفحة الآدمن */}
       {!isAdminRoute && <Footer currentLang={currentLang} />}
 
       {!isAdminRoute && (
@@ -142,6 +161,8 @@ function AppContent() {
           currentLang={currentLang}
         />
       )}
+
+      {!isAdminRoute && <WhatsAppButton />}
 
     </div>
   );

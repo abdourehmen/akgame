@@ -36,9 +36,8 @@
   margin: 0 auto;
   display: flex;
   align-items: center;
-  /* توزيع النصوص والصورة في جهتين متقابلتين وثابتتين بغض النظر عن اللغة */
   justify-content: space-between; 
-  direction: ltr; /* تثبيت اتجاه القسم ليكون من اليسار ليمين الثابت */
+  direction: ltr;
   gap: 50px;
   position: relative;
   z-index: 2;
@@ -50,7 +49,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 28px; /* ترك فراغ ومسافة مريحة ومنظمة بين العنوان، الوصف، والزر */
+  gap: 28px;
   text-align: left;
   align-items: flex-start;
   direction: ltr;
@@ -71,7 +70,7 @@
   margin: 0 0 15px 0;
 }
 
-/* ================= تنسيق زر تصفح الألعاب (الأبيض والطويل) ================= */
+/* ================= تنسيق زر تصفح الألعاب ================= */
 .hero-buttons {
   display: flex;
   width: 100%;
@@ -84,41 +83,45 @@
   justify-content: center;
   gap: 12px;
   width: 100%;
-  max-width: 360px; /* جعل الزر طويلاً ومريحاً بصرياً */
+  max-width: 360px;
   padding: 16px 32px;
   border-radius: 35px;
   font-size: 16px;
   font-weight: 700;
   text-decoration: none;
-  background: #ffffff !important; /* لون أبيض ناصع وثابت */
-  color: #000000 !important; /* لون الخط أسود ليتناسق مع الخلفية البيضاء */
+  background: #ffffff !important;
+  color: #000000 !important;
   box-shadow: 0 4px 25px rgba(255, 255, 255, 0.25);
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
   cursor: pointer;
   border: none;
+  position: relative;
+  overflow: hidden;
 }
 
 .white-long-btn:hover {
   background: #f1f5f9 !important;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 30px rgba(255, 255, 255, 0.4);
+  transform: translateY(-4px) scale(1.02) !important;
+  box-shadow: 0 12px 35px rgba(255, 255, 255, 0.4) !important;
 }
 
-/* ================= قسم الصورة والمجسم الثلاثي الأبعاد ================= */
+/* ================= قسم المجسم الثلاثي الأبعاد الطائف ================= */
 .hero-image-wrapper {
   flex: 1;
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 100%;
 }
 
+/* توهج سينمائي خلف المجسم */
 .hero-glow {
   position: absolute;
-  width: 350px;
-  height: 350px;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, rgba(239, 68, 68, 0.08) 50%, transparent 80%);
-  filter: blur(90px);
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, rgba(168, 85, 247, 0.12) 50%, transparent 75%);
+  filter: blur(80px);
   z-index: 1;
   border-radius: 50%;
 }
@@ -128,77 +131,63 @@
   z-index: 2;
   width: 100%;
   max-width: 600px;
-  display: flex;
+  display: flex !important;
   justify-content: center;
   align-items: center;
   min-height: 450px;
-}
-
-.hero-game-img {
-  width: 100%;
-  height: 600px;
-  border-radius: 20px;
-  border: 2px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.9);
-  object-fit: cover;
-  display: block;
-  margin-left: 0; /* توسيط العنصر تماماً */
-}
-
-.hero-model-viewer {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 3;
-  background-color: transparent;
-  --poster-color: transparent;
-  filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.8));
-  margin-left: 0; /* توسيط المجسم تماماً فوق الصورة */
-}
-/* ================= أنميشن الطفو المستمر للمجسم والصورة ================= */
-@keyframes floatCard {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-12px);
-  }
-}
-
-.hero-3d-card {
+  background: transparent;
+  border: none;
+  box-shadow: none;
   animation: floatCard 6s ease-in-out infinite;
 }
 
-/* ================= تحسين تفاعل الزر (Hover Animation) ================= */
-.white-long-btn {
-  position: relative;
-  overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+/* إخفاء الصورة الثابتة فقط لإظهار المجسم 3D */
+.hero-game-img {
+  display: none !important;
 }
 
-.white-long-btn:hover {
-  transform: translateY(-4px) scale(1.02) !important;
-  box-shadow: 0 12px 35px rgba(255, 255, 255, 0.4) !important;
+.hero-model-viewer {
+  display: block !important;
+  width: 100%;
+  height: 500px;
+  z-index: 3;
+  background-color: transparent !important;
+  --poster-color: transparent;
+  filter: drop-shadow(0 25px 35px rgba(0, 0, 0, 0.75));
+  border: none;
+  outline: none;
 }
+
+/* ================= أنميشن الطفو المستمر للمجسم ================= */
+@keyframes floatCard {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-14px) rotate(0.8deg);
+  }
+}
+
 /* ================= التجاوب مع الشاشات المتوسطة والصغيرة (Responsive) ================= */
 @media (max-width: 968px) {
   .hero-section {
-    padding: 120px 0 40px 0;
+    padding: 100px 0 40px 0;
     min-height: auto;
   }
 
   .hero-container {
     padding: 0 20px;
-    flex-direction: column; /* جعل النص في الأعلى والمجسم والصورة في الأسفل للهواتف */
+    flex-direction: column;
     text-align: center;
     align-items: center;
+    gap: 30px;
   }
 
   .hero-content {
     align-items: center;
     text-align: center;
     direction: ltr;
+    width: 100%;
   }
 
   .hero-title {
@@ -211,30 +200,30 @@
     width: 100%;
   }
 
-  .hero-game-img {
-    width: 100%;
-    height: 430px;
-    border-radius: 20px;
-    border: 2px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.9);
-    object-fit: cover;
-    display: block;
-    margin-left: 0;
+  .white-long-btn {
+    max-width: 100%;
   }
 
-  .white-long-btn {
-    max-width: 100%; /* ليأخذ عرض الشاشة بالكامل في الجوال */
+  .hero-image-wrapper {
+    width: 100%;
+    display: flex !important;
+    justify-content: center;
+  }
+
+  .hero-3d-card {
+    display: flex !important;
+    width: 100%;
+    min-height: 350px;
   }
 
   .hero-model-viewer {
-    position: absolute;
-    inset: 0;
+    display: block !important;
     width: 100%;
-    height: 100%;
-    z-index: 3;
-    background-color: transparent;
-    --poster-color: transparent;
-    filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.8));
-    margin-left: 0;
+    height: 380px !important;
+  }
+
+  .hero-glow {
+    width: 260px;
+    height: 260px;
   }
 }
