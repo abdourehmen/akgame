@@ -1,17 +1,26 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar/Navbar';
 import Footer from './components/Footer/Footer';
 import Hero from './components/Hero/Hero';
 import FeaturesMarquee from './components/FeaturesMarquee/FeaturesMarquee';
 import MainContent from './components/MainContent/MainContent';
 import ProductsPage from './components/ProductsPage/ProductsPage';
+import ProductDetails from './components/ProductDetails/ProductDetails';
+import CartPage from './components/CartPage/CartPage';
+import CheckoutPage from './components/CheckoutPage/CheckoutPage';
+import AdminDashboard from './components/AdminDashboard/AdminDashboard';
 import CartDrawer from './components/CartDrawer/CartDrawer';
 
-export default function App() {
+// مكون الفرعي للتحكم بإظهار الـ Navbar والـ Footer
+function AppContent() {
+  const location = useLocation();
   const [currentLang, setCurrentLang] = useState('ar');
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
+
+  // التحقق مما إذا كنا في مسار الآدمن
+  const isAdminRoute = location.pathname.startsWith('/admin');
 
   // دالة إضافة المنتج إلى السلة وفتح السلة الجانبية تلقائياً
   const handleAddToCart = (product) => {
@@ -19,7 +28,7 @@ export default function App() {
       const existingIndex = prevItems.findIndex((item) => item.id === product.id);
       if (existingIndex > -1) {
         const updated = [...prevItems];
-        updated[existingIndex].quantity += 1;
+        updated[existingIndex].quantity += (product.quantity || 1);
         return updated;
       }
       return [
@@ -28,15 +37,14 @@ export default function App() {
           id: product.id,
           title: product.title,
           price: product.price,
-          quantity: 1,
+          quantity: product.quantity || 1,
           image: product.image_url || product.image || '/logo.jpg'
         }
       ];
     });
-    setIsCartOpen(true); // فتح لوحة السلة مباشرة عند إضافة منتج
+    setIsCartOpen(true);
   };
 
-  // دالة تحديث الكمية داخل السلة
   const handleUpdateQuantity = (id, newQty) => {
     if (newQty <= 0) {
       handleRemoveItem(id);
@@ -47,47 +55,84 @@ export default function App() {
     }
   };
 
-  // دالة حذف عنصر من السلة
   const handleRemoveItem = (id) => {
     setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
   };
 
-  // حساب إجمالي عدد القطع في السلة لشعار الهيدر
+  const handleClearCart = () => {
+    setCartItems([]);
+  };
+
   const totalItemsCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
-    <Router>
-      <div className="app-container">
-        
-        {/* شريط التنقل */}
+    <div className="app-container">
+      
+      {/* عرض الـ Navbar فقط إذا لم نكن في صفحة الآدمن */}
+      {!isAdminRoute && (
         <Navbar 
           currentLang={currentLang} 
           setLang={setCurrentLang} 
           onOpenCart={() => setIsCartOpen(true)}
           cartCount={totalItemsCount}
         />
+      )}
 
-        <Routes>
-          <Route path="/" element={
-            <>
-              <Hero currentLang={currentLang} />
-              <FeaturesMarquee currentLang={currentLang} />
-              <MainContent currentLang={currentLang} onAddToCart={handleAddToCart} />
-            </>
-          } />
-          
-          {/* مسار المنتجات مع تمرير دالة الإضافة */}
-          <Route 
-            path="/products" 
-            element={<ProductsPage currentLang={currentLang} onAddToCart={handleAddToCart} />} 
-          />
-          
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
+      <Routes>
+        <Route path="/" element={
+          <>
+            <Hero currentLang={currentLang} />
+            <FeaturesMarquee currentLang={currentLang} />
+            <MainContent currentLang={currentLang} onAddToCart={handleAddToCart} />
+          </>
+        } />
         
-        <Footer currentLang={currentLang} />
+        <Route 
+          path="/products" 
+          element={<ProductsPage currentLang={currentLang} onAddToCart={handleAddToCart} />} 
+        />
+        
+        <Route 
+          path="/product/:id" 
+          element={<ProductDetails currentLang={currentLang} onAddToCart={handleAddToCart} />} 
+        />
 
-        {/* السلة الجانبية */}
+        <Route 
+          path="/cart" 
+          element={
+            <CartPage 
+              currentLang={currentLang} 
+              cartItems={cartItems} 
+              onUpdateQuantity={handleUpdateQuantity} 
+              onRemoveItem={handleRemoveItem} 
+            />
+          } 
+        />
+
+        <Route 
+          path="/checkout" 
+          element={
+            <CheckoutPage 
+              currentLang={currentLang} 
+              cartItems={cartItems} 
+              onClearCart={handleClearCart} 
+            />
+          } 
+        />
+
+        {/* مسار لوحة تحكم الآدمن */}
+        <Route 
+          path="/admin" 
+          element={<AdminDashboard />} 
+        />
+        
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+      
+      {/* عرض الـ Footer والسلة الجانبية فقط إذا لم نكن في صفحة الآدمن */}
+      {!isAdminRoute && <Footer currentLang={currentLang} />}
+
+      {!isAdminRoute && (
         <CartDrawer 
           isOpen={isCartOpen}
           onClose={() => setIsCartOpen(false)}
@@ -96,8 +141,16 @@ export default function App() {
           onRemoveItem={handleRemoveItem}
           currentLang={currentLang}
         />
+      )}
 
-      </div>
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <Router>
+      <AppContent />
     </Router>
   );
 }

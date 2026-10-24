@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Filter, ArrowRight, ArrowLeft, Gamepad2 } from 'lucide-react';
 import { translations } from '../../locales/translations';
 import { supabase } from '../../supabaseClient';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import './ProductsPage.css';
 
 export default function ProductsPage({ currentLang, onAddToCart }) {
   const isRtl = currentLang === 'ar';
   const location = useLocation();
+  const navigate = useNavigate();
 
   const storeTranslations = {
     ar: {
@@ -175,9 +176,9 @@ export default function ProductsPage({ currentLang, onAddToCart }) {
           query = query.eq('in_stock', true);
         }
 
-        // 4. فلتر العروض فقط
+        // 4. فلتر العروض فقط: تشمل المنتجات التي تحتوي على سعر تخفيض أو شارة تخفيض
         if (offersOnly) {
-          query = query.or('badge.eq.تخفيض,badge.eq.Sale,badge.eq.Promo,badge.eq.Oferta');
+          query = query.or('discount_price.gt.0,badge.eq.تخفيض,badge.eq.Sale,badge.eq.Promo,badge.eq.Oferta');
         }
 
         // 5. فلتر وصل حديثاً (آخر 30 يوماً)
@@ -192,10 +193,15 @@ export default function ProductsPage({ currentLang, onAddToCart }) {
           query = query.or('badge.eq.الأكثر مبيعا,badge.eq.Best Seller,badge.eq.Meilleures ventes,badge.eq.Más vendidos');
         }
 
-        // 7. فلتر نطاق السعر
+        // 7. فلتر كلمة البحث الممررة من الصفحة الرئيسية
+        if (location.state?.searchQuery) {
+          query = query.ilike('title', `%${location.state.searchQuery}%`);
+        }
+
+        // 8. فلتر نطاق السعر
         query = query.gte('price', minPrice).lte('price', maxPrice);
 
-        // 8. الترتيب حسب الخيار المختار
+        // 9. الترتيب حسب الخيار المختار
         if (sortBy === 'price_asc') {
           query = query.order('price', { ascending: true });
         } else if (sortBy === 'price_desc') {
@@ -220,7 +226,7 @@ export default function ProductsPage({ currentLang, onAddToCart }) {
     }
 
     fetchProducts();
-  }, [selectedPlatform, selectedCategory, inStockOnly, offersOnly, newlyArrived, bestSellersOnly, minPrice, maxPrice, sortBy]);
+  }, [selectedPlatform, selectedCategory, inStockOnly, offersOnly, newlyArrived, bestSellersOnly, minPrice, maxPrice, sortBy, location.state?.searchQuery]);
 
   return (
     <div className="products-page-container" dir={isRtl ? 'rtl' : 'ltr'}>
@@ -399,8 +405,15 @@ export default function ProductsPage({ currentLang, onAddToCart }) {
           </div>
         ) : (
           currentProducts.map((prod) => (
-            <div key={prod.id} className="product-card">
-              {prod.badge && <span className="product-badge">{prod.badge}</span>}
+            <div 
+              key={prod.id} 
+              className="product-card"
+              onClick={() => navigate(`/product/${prod.id}`)}
+              style={{ cursor: 'pointer' }}
+            >
+              {(prod.badge || prod.discount_price) && (
+                <span className="product-badge">{prod.badge || 'تخفيض'}</span>
+              )}
               <div className="product-image-container">
                 {prod.image_url ? (
                   <img src={prod.image_url} alt={prod.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -414,11 +427,25 @@ export default function ProductsPage({ currentLang, onAddToCart }) {
                   <span className="product-status">
                     <span className="status-dot"></span> {prod.in_stock !== false ? t.inStock : t.outOfStock}
                   </span>
-                  <span className="product-price">{prod.price} DZD</span>
+                  
+                  {/* عرض السعر المخفض وبجانبه السعر القديم */}
+                  <div className="product-price-box">
+                    {prod.discount_price ? (
+                      <>
+                        <span className="product-price discount">{prod.discount_price} DZD</span>
+                        <span className="product-price old" style={{ textDecoration: 'line-through', fontSize: '12px', color: '#94a3b8', marginStart: '6px' }}>{prod.price} DZD</span>
+                      </>
+                    ) : (
+                      <span className="product-price">{prod.price} DZD</span>
+                    )}
+                  </div>
                 </div>
                 <button 
                   className="add-to-cart-btn" 
-                  onClick={() => onAddToCart && onAddToCart(prod)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onAddToCart && onAddToCart(prod);
+                  }}
                 >
                   {t.addToCart}
                 </button>

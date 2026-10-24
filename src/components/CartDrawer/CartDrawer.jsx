@@ -1,8 +1,11 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { X, ShoppingCart, Plus, Minus, Truck, ArrowLeft, ArrowRight } from 'lucide-react';
 import './CartDrawer.css';
 
 export default function CartDrawer({ isOpen, onClose, cartItems, onUpdateQuantity, onRemoveItem, currentLang }) {
+  const navigate = useNavigate();
+
   if (!isOpen) return null;
 
   const isRtl = currentLang === 'ar';
@@ -54,6 +57,18 @@ export default function CartDrawer({ isOpen, onClose, cartItems, onUpdateQuantit
   };
 
   const totalItemsCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
+  // دالة التوجيه إلى صفحة إتمام الطلب مباشرة
+  const handleGoToCheckout = () => {
+    onClose();
+    navigate('/checkout');
+  };
+
+  // دالة التوجيه إلى صفحة عرض السلة
+  const handleGoToCartPage = () => {
+    onClose();
+    navigate('/cart');
+  };
 
   return (
     <div className="cart-drawer-overlay" onClick={onClose}>
@@ -142,12 +157,14 @@ export default function CartDrawer({ isOpen, onClose, cartItems, onUpdateQuantit
               <Truck size={18} />
             </div>
 
-            <button className="checkout-btn">
+            {/* زر إتمام الطلب ينقل إلى صفحة الشراء /checkout */}
+            <button className="checkout-btn" onClick={handleGoToCheckout}>
               <span>{t.checkout}</span>
               {isRtl ? <ArrowLeft size={18} /> : <ArrowRight size={18} />}
             </button>
 
-            <button className="view-cart-btn" onClick={onClose}>
+            {/* زر عرض السلة ينقل إلى صفحة السلة /cart */}
+            <button className="view-cart-btn" onClick={handleGoToCartPage}>
               {t.viewCart}
             </button>
           </div>

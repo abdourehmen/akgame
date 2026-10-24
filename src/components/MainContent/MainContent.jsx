@@ -89,10 +89,27 @@ export default function MainContent({ currentLang, onAddToCart }) {
     { id: 6, image: "/6photo(6).png", key: "بطاقات رقمية", name: { ar: "بطاقات رقمية", en: "Digital Cards", fr: "Cartes Cadeaux", es: "Tarjetas Digitales" } },
   ];
 
-  // تصفية المنتجات لكل قسم بناءً على نتائج الفلترة الحالية
-  const newProducts = filteredProducts.filter(p => p.badge === 'جديد' || p.badge === 'New').slice(0, 5);
+  // تصفية قسم وصل حديثاً تلقائياً: المنتجات المضافة حديثاً (خلال آخر 30 يوماً أو أول 5 أحدث منتجات مضافة)
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+  const newlyArrivedProducts = filteredProducts.filter(p => 
+    (p.created_at && new Date(p.created_at) >= thirtyDaysAgo) || 
+    ['جديد', 'New'].includes(p.badge)
+  );
+
+  const newProducts = newlyArrivedProducts.length > 0 
+    ? newlyArrivedProducts.slice(0, 5) 
+    : filteredProducts.slice(0, 5);
+
   const bestSellers = filteredProducts.filter(p => p.badge === 'الأكثر مبيعا' || p.badge === 'Best Seller').slice(0, 5);
-  const discountProducts = filteredProducts.filter(p => p.badge === 'تخفيض' || p.badge === 'Sale' || p.badge === 'Promo').slice(0, 5);
+  
+  // تصفية قسم العروض
+  const discountProducts = filteredProducts.filter(p => 
+    (p.discount_price && Number(p.discount_price) > 0) || 
+    ['تخفيض', 'Sale', 'Promo', 'Oferta'].includes(p.badge)
+  ).slice(0, 5);
+
   const digitalProducts = filteredProducts.filter(p => p.category === 'digital' || p.badge === 'رقمي' || p.category === 'بطاقات رقمية').slice(0, 5);
   const figuresProducts = filteredProducts.filter(p => p.category === 'مجسمات' || p.category === 'figures' || p.badge === 'مجسمات').slice(0, 5);
 
@@ -100,12 +117,16 @@ export default function MainContent({ currentLang, onAddToCart }) {
     <div 
       key={prod.id} 
       className="product-card" 
+      onClick={() => navigate(`/product/${prod.id}`)}
       style={{ 
+        cursor: 'pointer',
         '--card-index': index,
         ...(isDirectVisible ? { opacity: 1, transform: 'none', visibility: 'visible' } : {})
       }}
     >
-      {prod.badge && <span className="product-badge">{prod.badge}</span>}
+      {(prod.badge || prod.discount_price) && (
+        <span className="product-badge">{prod.badge || 'تخفيض'}</span>
+      )}
       <div className="product-image-container">
         {prod.image_url ? (
           <img src={prod.image_url} alt={prod.title} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px' }} />
@@ -120,11 +141,24 @@ export default function MainContent({ currentLang, onAddToCart }) {
             <span className="status-dot"></span> 
             {prod.in_stock !== false ? (isRtl ? 'متوفر' : 'In Stock') : (isRtl ? 'غير متوفر' : 'Out of Stock')}
           </span>
-          <span className="product-price">{prod.price} DZD</span>
+          
+          <div className="product-price-box">
+            {prod.discount_price ? (
+              <>
+                <span className="product-price discount">{prod.discount_price} DZD</span>
+                <span className="product-price old">{prod.price} DZD</span>
+              </>
+            ) : (
+              <span className="product-price">{prod.price} DZD</span>
+            )}
+          </div>
         </div>
         <button 
           className="add-to-cart-btn" 
-          onClick={() => onAddToCart && onAddToCart(prod)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onAddToCart && onAddToCart(prod);
+          }}
         >
           {t.addToCart}
         </button>
@@ -134,7 +168,7 @@ export default function MainContent({ currentLang, onAddToCart }) {
 
   return (
     <main className="store-main-container">
-      {/* 1. قسم البحث (موسّط في منتصف الشاشة) */}
+      {/* 1. قسم البحث */}
       <div 
         className="search-section fade-in-section" 
         style={{ 
@@ -166,7 +200,7 @@ export default function MainContent({ currentLang, onAddToCart }) {
         </form>
       </div>
 
-      {/* عرض نتائج البحث الفورية فوراً وتلقائياً دون إخفاء الكروت */}
+      {/* نتائج البحث */}
       {searchQuery.trim() && (
         <section className="products-section fade-in-section is-visible" style={{ marginBottom: '30px', opacity: 1, visibility: 'visible' }}>
           <div className="section-header">
@@ -231,7 +265,7 @@ export default function MainContent({ currentLang, onAddToCart }) {
           {loading ? (
             <p style={{ gridColumn: '1 / -1', textAlign: 'center', color: '#94a3b8' }}>{isRtl ? 'جاري التحميل...' : 'Loading...'}</p>
           ) : (
-            (newProducts.length > 0 ? newProducts : products.slice(0, 5)).map((prod, idx) => renderProductCard(prod, idx))
+            newProducts.map((prod, idx) => renderProductCard(prod, idx))
           )}
         </div>
       </section>
